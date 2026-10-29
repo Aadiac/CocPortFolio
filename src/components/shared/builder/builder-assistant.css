@@ -1,0 +1,1378 @@
+/*
+ * Builder assistant — every rule is scoped to `.builder-assistant` so nothing leaks into
+ * the rest of the portfolio. Animations only touch transform and opacity.
+ */
+
+.builder-assistant {
+  --ba-wood: #7a4a24;
+  --ba-wood-dark: #4a2c14;
+  --ba-wood-light: #a8693a;
+  --ba-parchment: #fbf1d6;
+  --ba-parchment-deep: #f1dfb1;
+  --ba-ink: #2b1d12;
+  --ba-ink-soft: #5c4330;
+  --ba-gold: #f2b632;
+  --ba-gold-dark: #b97f0f;
+  --ba-green: #5fb13a;
+  --ba-green-dark: #3d7d22;
+  --ba-stone: #8c8478;
+  --ba-ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --ba-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ba-dock-right: 1.25rem;
+  --ba-dock-bottom: 1rem;
+  --ba-character: 5.25rem;
+  --ba-font-display: var(--font-supercell), var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.builder-assistant *,
+.builder-assistant *::before,
+.builder-assistant *::after {
+  box-sizing: border-box;
+}
+
+.builder-assistant button,
+.builder-assistant a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.builder-assistant :focus-visible {
+  outline: 3px solid var(--ba-gold);
+  outline-offset: 2px;
+}
+
+/* Dock & trigger ---------------------------------------------------------- */
+
+.builder-assistant .ba-dock {
+  position: fixed;
+  right: var(--ba-dock-right);
+  bottom: var(--ba-dock-bottom);
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.builder-assistant .ba-trigger {
+  position: relative;
+  display: block;
+  width: var(--ba-character);
+  height: calc(var(--ba-character) * 1.1);
+  padding: 0;
+  border: 0;
+  border-radius: 1.25rem;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.builder-assistant .ba-character {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 6px 10px rgba(20, 12, 4, 0.28)) drop-shadow(0 0 1.5px rgba(255, 248, 225, 0.9));
+  transition: transform 0.25s var(--ba-ease-out);
+}
+
+.builder-assistant .ba-trigger:hover .ba-character,
+.builder-assistant .ba-trigger:focus-visible .ba-character {
+  transform: scale(1.06);
+}
+
+.builder-assistant .ba-trigger:active .ba-character {
+  transform: scale(0.97);
+}
+
+.builder-assistant .ba-tooltip {
+  position: absolute;
+  right: calc(var(--ba-character) + 0.25rem);
+  bottom: calc(var(--ba-character) * 0.55);
+  padding: 0.4rem 0.7rem;
+  border: 2px solid var(--ba-wood-dark);
+  border-radius: 0.6rem;
+  background: var(--ba-parchment);
+  color: var(--ba-ink);
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 4px 0 rgba(74, 44, 20, 0.35);
+  opacity: 0;
+  transform: translateX(6px);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s var(--ba-ease-out);
+  pointer-events: none;
+}
+
+.builder-assistant .ba-dock:has(.ba-trigger:hover) .ba-tooltip,
+.builder-assistant .ba-dock:has(.ba-trigger:focus-visible) .ba-tooltip {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (hover: none) {
+  .builder-assistant .ba-tooltip {
+    display: none;
+  }
+}
+
+/* Greeting bubble --------------------------------------------------------- */
+
+.builder-assistant .ba-greeting {
+  position: relative;
+  width: min(17rem, calc(100vw - 2rem));
+  margin-bottom: 0.5rem;
+  margin-right: 0.5rem;
+  animation: ba-greeting-in 0.42s var(--ba-ease-spring) both;
+  transform-origin: bottom right;
+}
+
+.builder-assistant .ba-greeting-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+  padding: 0.8rem 2rem 0.8rem 0.95rem;
+  border: 3px solid var(--ba-wood);
+  border-radius: 1rem 1rem 0.3rem 1rem;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.55), transparent 55%),
+    linear-gradient(180deg, var(--ba-parchment), var(--ba-parchment-deep));
+  color: var(--ba-ink);
+  text-align: left;
+  box-shadow:
+    inset 0 0 0 1px rgba(242, 182, 50, 0.6),
+    0 5px 0 var(--ba-wood-dark),
+    0 14px 24px rgba(20, 12, 4, 0.25);
+  cursor: pointer;
+}
+
+.builder-assistant .ba-greeting-body::after {
+  content: '';
+  position: absolute;
+  right: 1.6rem;
+  bottom: -0.55rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-right: 3px solid var(--ba-wood);
+  border-bottom: 3px solid var(--ba-wood);
+  background: var(--ba-parchment-deep);
+  transform: rotate(45deg);
+}
+
+.builder-assistant .ba-greeting-title {
+  font-family: var(--ba-font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  color: var(--ba-wood);
+}
+
+.builder-assistant .ba-greeting-text {
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.builder-assistant .ba-greeting-cta {
+  margin-top: 0.15rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ba-green-dark);
+}
+
+.builder-assistant .ba-greeting-close {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ba-ink-soft);
+  cursor: pointer;
+}
+
+.builder-assistant .ba-greeting-close:hover {
+  background: rgba(122, 74, 36, 0.14);
+  color: var(--ba-ink);
+}
+
+@keyframes ba-greeting-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Hammer impact ----------------------------------------------------------- */
+
+.builder-assistant .ba-impact {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.builder-assistant .ba-impact-ring {
+  position: absolute;
+  left: -1.6rem;
+  top: -1.6rem;
+  width: 3.2rem;
+  height: 3.2rem;
+  border: 3px solid var(--ba-gold);
+  border-radius: 50%;
+  opacity: 0;
+  animation: ba-ring 0.42s var(--ba-ease-out) forwards;
+}
+
+.builder-assistant .ba-impact-spark {
+  position: absolute;
+  left: -0.2rem;
+  top: -0.2rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 2px;
+  background: var(--ba-gold);
+  box-shadow: 0 0 6px rgba(242, 182, 50, 0.8);
+  opacity: 0;
+  --angle: calc(var(--i) * 60deg - 90deg);
+  animation: ba-spark 0.45s var(--ba-ease-out) forwards;
+}
+
+@keyframes ba-ring {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.3);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+}
+
+@keyframes ba-spark {
+  0% {
+    opacity: 1;
+    transform: rotate(var(--angle)) translateX(0.4rem) rotate(45deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateX(2.6rem) rotate(45deg) scale(0.4);
+  }
+}
+
+/* Panel ------------------------------------------------------------------- */
+
+.builder-assistant .ba-panel {
+  position: fixed;
+  right: var(--ba-dock-right);
+  bottom: calc(var(--ba-dock-bottom) + var(--ba-character) * 1.1 + 0.5rem);
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  width: 24rem;
+  /* Leaves room for the site's fixed menu button in the top-right corner. */
+  max-height: min(38rem, calc(100dvh - var(--ba-character) * 1.1 - 6.5rem));
+  overflow: hidden;
+  border: 4px solid var(--ba-wood-dark);
+  border-radius: 1.25rem;
+  background: var(--ba-wood);
+  color: var(--ba-ink);
+  box-shadow:
+    inset 0 0 0 2px var(--ba-wood-light),
+    0 6px 0 rgba(43, 29, 18, 0.55),
+    0 24px 48px rgba(10, 6, 2, 0.35);
+  transform-origin: calc(100% - var(--ba-character) / 2) calc(100% + var(--ba-character) * 0.6);
+  outline: none;
+}
+
+.builder-assistant .ba-panel[hidden] {
+  display: none;
+}
+
+.builder-assistant .ba-panel--open {
+  animation: ba-panel-in 0.4s var(--ba-ease-spring) both;
+}
+
+.builder-assistant .ba-panel--closing {
+  animation: ba-panel-out 0.22s ease-in both;
+  pointer-events: none;
+}
+
+@keyframes ba-panel-in {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.55);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ba-panel-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(14px) scale(0.6);
+  }
+}
+
+/* Header: carved wooden plank */
+.builder-assistant .ba-header {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.7rem 0.75rem 0.75rem;
+  background:
+    repeating-linear-gradient(176deg, rgba(255, 255, 255, 0.05) 0 2px, transparent 2px 9px),
+    linear-gradient(180deg, var(--ba-wood-light), var(--ba-wood));
+  border-bottom: 3px solid var(--ba-wood-dark);
+  box-shadow: inset 0 -2px 0 rgba(242, 182, 50, 0.35);
+  color: #fff8e7;
+}
+
+.builder-assistant .ba-portrait {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  overflow: hidden;
+  border: 3px solid var(--ba-gold);
+  border-radius: 0.8rem;
+  background: radial-gradient(circle at 50% 30%, #bfe7a8, #6cc04a);
+  box-shadow: 0 3px 0 var(--ba-wood-dark);
+}
+
+.builder-assistant .ba-portrait svg {
+  width: 100%;
+  height: 100%;
+}
+
+.builder-assistant .ba-header-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.builder-assistant .ba-title {
+  margin: 0;
+  font-family: var(--ba-font-display);
+  font-size: 1rem;
+  line-height: 1.1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #fff8e7;
+  text-shadow:
+    0 2px 0 var(--ba-wood-dark),
+    0 0 1px var(--ba-wood-dark);
+}
+
+.builder-assistant .ba-subtitle {
+  margin: 0.15rem 0 0;
+  font-size: 0.72rem;
+  color: rgba(255, 248, 231, 0.85);
+}
+
+.builder-assistant .ba-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.3rem 0 0;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(43, 29, 18, 0.45);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffe9a8;
+}
+
+.builder-assistant .ba-status-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--ba-gold);
+}
+
+.builder-assistant .ba-status-dot.is-busy {
+  animation: ba-pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes ba-pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.builder-assistant .ba-header-actions {
+  display: flex;
+  gap: 0.35rem;
+  align-self: flex-start;
+}
+
+.builder-assistant .ba-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 2px solid var(--ba-wood-dark);
+  border-radius: 0.6rem;
+  background: linear-gradient(180deg, #a69d8f, var(--ba-stone));
+  color: #fff;
+  box-shadow: 0 3px 0 var(--ba-wood-dark);
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.builder-assistant .ba-icon-btn:hover {
+  transform: translateY(-1px);
+}
+
+.builder-assistant .ba-icon-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ba-wood-dark);
+}
+
+/* Messages: parchment scroll */
+.builder-assistant .ba-messages {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.9rem 0.8rem;
+  margin: 0 0.4rem;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(255, 255, 255, 0.6), transparent 40%),
+    radial-gradient(circle at 90% 85%, rgba(201, 150, 70, 0.18), transparent 45%),
+    linear-gradient(180deg, var(--ba-parchment), var(--ba-parchment-deep));
+  box-shadow: inset 0 0 18px rgba(122, 74, 36, 0.25);
+  scrollbar-width: thin;
+  scrollbar-color: var(--ba-wood-light) transparent;
+}
+
+.builder-assistant .ba-row {
+  display: flex;
+  margin-bottom: 0.7rem;
+  animation: ba-rise 0.3s var(--ba-ease-out) both;
+}
+
+.builder-assistant .ba-row--user {
+  justify-content: flex-end;
+}
+
+.builder-assistant .ba-bubble {
+  max-width: 88%;
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.builder-assistant .ba-bubble p {
+  margin: 0;
+}
+
+.builder-assistant .ba-bubble--bot {
+  width: 100%;
+  max-width: 100%;
+  border: 2px solid rgba(122, 74, 36, 0.45);
+  border-radius: 0.3rem 0.9rem 0.9rem 0.9rem;
+  background: rgba(255, 252, 242, 0.85);
+  color: var(--ba-ink);
+  box-shadow: 0 2px 0 rgba(122, 74, 36, 0.2);
+}
+
+.builder-assistant .ba-bubble--error {
+  border-color: #b4532a;
+  background: #fff1e6;
+}
+
+.builder-assistant .ba-bubble--user {
+  border-radius: 0.9rem 0.3rem 0.9rem 0.9rem;
+  background: linear-gradient(180deg, var(--ba-wood-light), var(--ba-wood));
+  color: #fff8e7;
+  font-weight: 600;
+  box-shadow: 0 2px 0 var(--ba-wood-dark);
+}
+
+@keyframes ba-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Quick-action game buttons */
+.builder-assistant .ba-quick-grid {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.7rem;
+}
+
+.builder-assistant .ba-game-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.45rem 0.7rem;
+  border: 2px solid var(--ba-green-dark);
+  border-radius: 0.7rem;
+  background: linear-gradient(180deg, #8bd65a 0%, var(--ba-green) 55%, #4f9a2d 100%);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-align: left;
+  text-shadow: 0 1px 0 rgba(30, 60, 15, 0.7);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.35),
+    0 3px 0 var(--ba-green-dark);
+  cursor: pointer;
+  animation: ba-rise 0.3s var(--ba-ease-out) both;
+  animation-delay: calc(var(--stagger, 0) * 45ms);
+  transition:
+    transform 0.12s ease,
+    filter 0.12s ease;
+}
+
+.builder-assistant .ba-game-btn--gold {
+  border-color: var(--ba-gold-dark);
+  background: linear-gradient(180deg, #ffd66b 0%, var(--ba-gold) 55%, #dc9a16 100%);
+  color: var(--ba-ink);
+  text-shadow: 0 1px 0 rgba(255, 245, 210, 0.7);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.45),
+    0 3px 0 var(--ba-gold-dark);
+}
+
+.builder-assistant .ba-game-btn:hover:not(:disabled) {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.builder-assistant .ba-game-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.25);
+}
+
+.builder-assistant .ba-game-btn:disabled,
+.builder-assistant .ba-chip:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.builder-assistant .ba-game-btn-icon {
+  display: grid;
+  place-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  flex-shrink: 0;
+  border-radius: 0.5rem;
+  background: rgba(0, 0, 0, 0.16);
+}
+
+/* Follow-up chips */
+.builder-assistant .ba-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.65rem;
+}
+
+.builder-assistant .ba-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 2.25rem;
+  padding: 0.3rem 0.75rem;
+  border: 2px solid rgba(122, 74, 36, 0.5);
+  border-radius: 999px;
+  background: #fffaf0;
+  color: var(--ba-wood-dark);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    background-color 0.12s ease;
+}
+
+.builder-assistant .ba-chip:hover:not(:disabled) {
+  background: #fff1cf;
+  transform: translateY(-1px);
+}
+
+.builder-assistant .ba-chip--primary {
+  border-color: var(--ba-wood-dark);
+  background: linear-gradient(180deg, var(--ba-wood-light), var(--ba-wood));
+  color: #fff8e7;
+}
+
+.builder-assistant .ba-chip--primary:hover:not(:disabled) {
+  background: linear-gradient(180deg, #b87644, var(--ba-wood-light));
+}
+
+/* Skills */
+.builder-assistant .ba-skills {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.builder-assistant .ba-block-heading {
+  margin: 0 0 0.3rem;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ba-wood);
+}
+
+.builder-assistant .ba-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.builder-assistant .ba-tags li {
+  padding: 0.15rem 0.5rem;
+  border: 1px solid rgba(122, 74, 36, 0.35);
+  border-radius: 0.4rem;
+  background: var(--ba-parchment-deep);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ba-ink);
+}
+
+/* Achievement cards */
+.builder-assistant .ba-achievements {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.7rem;
+}
+
+.builder-assistant .ba-achievement {
+  overflow: hidden;
+  border: 3px solid var(--ba-wood-dark);
+  border-radius: 0.85rem;
+  background: linear-gradient(180deg, #fffaf0, var(--ba-parchment-deep));
+  box-shadow:
+    inset 0 0 0 1px var(--ba-gold),
+    0 3px 0 var(--ba-wood-dark);
+  animation: ba-unlock 0.5s var(--ba-ease-spring) both;
+  animation-delay: calc(var(--stagger, 0) * 90ms + 80ms);
+  transition: transform 0.2s var(--ba-ease-out);
+}
+
+.builder-assistant .ba-achievement.is-claimed {
+  animation: ba-claim 0.26s ease-out;
+}
+
+@keyframes ba-unlock {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ba-claim {
+  40% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.builder-assistant .ba-achievement-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.6rem;
+  background: linear-gradient(180deg, #ffd66b, var(--ba-gold));
+  border-bottom: 2px solid var(--ba-gold-dark);
+  font-family: var(--ba-font-display);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ba-ink);
+}
+
+.builder-assistant .ba-achievement-emblem {
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 2px solid var(--ba-wood-dark);
+  border-radius: 50%;
+  background: #fff3c4;
+  color: var(--ba-gold-dark);
+}
+
+.builder-assistant .ba-achievement-body {
+  padding: 0.6rem 0.7rem 0.7rem;
+}
+
+.builder-assistant .ba-achievement-type {
+  margin: 0;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ba-wood);
+}
+
+.builder-assistant .ba-achievement-title {
+  margin: 0.1rem 0 0.25rem;
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--ba-ink);
+}
+
+.builder-assistant .ba-achievement-desc {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--ba-ink-soft);
+}
+
+.builder-assistant .ba-achievement-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.65rem;
+}
+
+.builder-assistant .ba-gold-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.85rem;
+  border: 2px solid var(--ba-gold-dark);
+  border-radius: 0.6rem;
+  background: linear-gradient(180deg, #ffd66b, var(--ba-gold));
+  color: var(--ba-ink);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.45),
+    0 3px 0 var(--ba-gold-dark);
+  transition: transform 0.12s ease;
+}
+
+.builder-assistant .ba-gold-btn:hover {
+  transform: translateY(-1px);
+}
+
+.builder-assistant .ba-gold-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ba-gold-dark);
+}
+
+.builder-assistant .ba-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 2rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ba-wood);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Experience timeline */
+.builder-assistant .ba-timeline {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.builder-assistant .ba-timeline li {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+}
+
+.builder-assistant .ba-year {
+  flex-shrink: 0;
+  padding: 0.15rem 0.45rem;
+  border: 2px solid var(--ba-wood-dark);
+  border-radius: 0.4rem;
+  background: var(--ba-gold);
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--ba-ink);
+}
+
+.builder-assistant .ba-timeline-title {
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.builder-assistant .ba-timeline-meta {
+  font-size: 0.74rem;
+  color: var(--ba-ink-soft);
+}
+
+/* Contact */
+.builder-assistant .ba-contact-list {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.builder-assistant .ba-contact-link {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.5rem;
+  padding: 0.4rem 0.7rem;
+  border: 2px solid rgba(122, 74, 36, 0.45);
+  border-radius: 0.6rem;
+  background: #fffaf0;
+  color: var(--ba-ink);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.builder-assistant .ba-contact-link:hover {
+  background: #fff1cf;
+}
+
+/* Thinking */
+.builder-assistant .ba-thinking {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.builder-assistant .ba-blueprint {
+  flex-shrink: 0;
+}
+
+.builder-assistant .ba-blueprint rect {
+  fill: #2f5d8a;
+  stroke: var(--ba-ink);
+  stroke-width: 1.6;
+}
+
+.builder-assistant .ba-blueprint path {
+  fill: none;
+  stroke: #cfe6ff;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-dasharray: 34;
+  animation: ba-sketch 1.2s ease-in-out infinite;
+}
+
+@keyframes ba-sketch {
+  from {
+    stroke-dashoffset: 34;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.builder-assistant .ba-thinking-text {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ba-ink-soft);
+}
+
+.builder-assistant .ba-progress {
+  position: relative;
+  display: block;
+  width: 8rem;
+  height: 0.4rem;
+  margin-top: 0.35rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(122, 74, 36, 0.2);
+}
+
+.builder-assistant .ba-progress::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  border-radius: inherit;
+  background: var(--ba-gold);
+  animation: ba-progress 0.9s ease-in-out infinite;
+}
+
+@keyframes ba-progress {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+/* Input */
+.builder-assistant .ba-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.6rem 0.65rem;
+  background:
+    repeating-linear-gradient(176deg, rgba(255, 255, 255, 0.04) 0 2px, transparent 2px 9px),
+    var(--ba-wood);
+}
+
+.builder-assistant .ba-input {
+  flex: 1;
+  min-width: 0;
+  height: 2.6rem;
+  padding: 0 0.8rem;
+  border: 2px solid var(--ba-wood-dark);
+  border-radius: 0.7rem;
+  background: var(--ba-parchment);
+  color: var(--ba-ink);
+  /* 16px stops iOS from zooming on focus */
+  font-size: 1rem;
+  box-shadow: inset 0 2px 3px rgba(74, 44, 20, 0.2);
+}
+
+.builder-assistant .ba-input::placeholder {
+  color: #8b7259;
+}
+
+.builder-assistant .ba-input:focus-visible {
+  outline-offset: 0;
+}
+
+.builder-assistant .ba-send {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  flex-shrink: 0;
+  border: 2px solid var(--ba-gold-dark);
+  border-radius: 0.7rem;
+  background: linear-gradient(180deg, #ffd66b, var(--ba-gold));
+  color: var(--ba-ink);
+  box-shadow: 0 3px 0 var(--ba-gold-dark);
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.builder-assistant .ba-send:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ba-gold-dark);
+}
+
+.builder-assistant .ba-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Mobile ------------------------------------------------------------------ */
+
+@media (max-width: 639px) {
+  .builder-assistant {
+    --ba-dock-right: 0.6rem;
+    --ba-dock-bottom: 0.6rem;
+    --ba-character: 4.1rem;
+  }
+
+  .builder-assistant .ba-panel {
+    left: 0.5rem;
+    right: 0.5rem;
+    width: auto;
+    max-height: calc(100dvh - var(--ba-character) * 1.1 - 6rem);
+  }
+
+  .builder-assistant .ba-title {
+    font-size: 0.9rem;
+  }
+}
+
+/* Character state machine ------------------------------------------------- */
+
+.builder-assistant .builder-float,
+.builder-assistant .builder-head,
+.builder-assistant .builder-hammer-arm,
+.builder-assistant .builder-body,
+.builder-assistant .builder-shadow {
+  transform-box: view-box;
+}
+
+.builder-assistant .builder-float {
+  transform-origin: 60px 110px;
+}
+
+.builder-assistant .builder-shadow {
+  transform-origin: 60px 128px;
+}
+
+.builder-assistant .builder-body {
+  transform-origin: 60px 104px;
+}
+
+.builder-assistant .builder-head {
+  transform-origin: 60px 64px;
+}
+
+.builder-assistant .builder-hammer-arm {
+  transform-origin: 78px 75px;
+  transition: transform 0.2s var(--ba-ease-out);
+}
+
+.builder-assistant .builder-eyes,
+.builder-assistant .builder-brows,
+.builder-assistant .builder-mouth {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.builder-assistant .builder-mouth {
+  transform: scaleY(0.25);
+}
+
+.builder-assistant .builder-alert,
+.builder-assistant .builder-thought,
+.builder-assistant .builder-sparkles {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  transition: opacity 0.2s ease;
+}
+
+/* idle / ready: gentle float, blink, an occasional hammer tap */
+.builder-assistant .builder--idle .builder-float,
+.builder-assistant .builder--ready .builder-float,
+.builder-assistant .builder--greeting .builder-float {
+  animation: ba-float 3.6s ease-in-out infinite;
+}
+
+.builder-assistant .builder--idle .builder-shadow,
+.builder-assistant .builder--ready .builder-shadow,
+.builder-assistant .builder--greeting .builder-shadow {
+  animation: ba-shadow 3.6s ease-in-out infinite;
+}
+
+.builder-assistant .builder--idle .builder-hammer-arm {
+  animation: ba-tap 5s ease-in-out infinite;
+}
+
+.builder-assistant .builder-eyes {
+  animation: ba-blink 5.5s infinite;
+}
+
+/* hover acknowledgement: hammer lifts a little, eyebrows raise */
+.builder-assistant .ba-trigger:hover .builder--idle .builder-hammer-arm,
+.builder-assistant .ba-trigger:focus-visible .builder--idle .builder-hammer-arm {
+  animation: none;
+  transform: rotate(-18deg);
+}
+
+.builder-assistant .ba-trigger:hover .builder--idle .builder-brows,
+.builder-assistant .ba-trigger:focus-visible .builder--idle .builder-brows {
+  transform: translateY(-1.5px);
+}
+
+/* noticed: head snaps toward the visitor with a "!" */
+.builder-assistant .builder--noticed .builder-head {
+  animation: ba-notice 0.5s var(--ba-ease-spring) both;
+}
+
+.builder-assistant .builder--noticed .builder-brows {
+  transform: translateY(-2px);
+}
+
+.builder-assistant .builder--noticed .builder-alert {
+  opacity: 1;
+  animation: ba-pop 0.35s var(--ba-ease-spring) both;
+}
+
+/* greeting: friendly hammer wave while talking */
+.builder-assistant .builder--greeting .builder-hammer-arm {
+  animation: ba-wave 0.75s ease-in-out 2;
+}
+
+.builder-assistant .builder--greeting .builder-mouth,
+.builder-assistant .builder--responding .builder-mouth {
+  animation: ba-talk 0.28s ease-in-out infinite;
+}
+
+/* opening: raise and strike */
+.builder-assistant .builder--opening .builder-hammer-arm {
+  animation: ba-strike 0.34s cubic-bezier(0.5, 0, 0.75, 0) both;
+}
+
+.builder-assistant .builder--opening .builder-body {
+  animation: ba-squash 0.42s ease-out both;
+}
+
+/* thinking: looks up, thought bubbles, hammer resting */
+.builder-assistant .builder--thinking .builder-float {
+  animation: ba-float 2.4s ease-in-out infinite;
+}
+
+.builder-assistant .builder--thinking .builder-hammer-arm {
+  transform: rotate(10deg);
+}
+
+.builder-assistant .builder--thinking .builder-eyes {
+  animation: none;
+  transform: translate(1px, -1.5px);
+}
+
+.builder-assistant .builder--thinking .builder-head {
+  transform: rotate(4deg);
+  transition: transform 0.25s ease;
+}
+
+.builder-assistant .builder--thinking .builder-thought {
+  opacity: 1;
+  animation: ba-thought 1.2s ease-in-out infinite;
+}
+
+/* responding: talking nod */
+.builder-assistant .builder--responding .builder-head {
+  animation: ba-nod 0.45s ease-in-out 2;
+}
+
+/* celebrating: hop with raised hammer and sparkles */
+.builder-assistant .builder--celebrating .builder-float {
+  animation: ba-hop 0.55s ease-in-out 2;
+}
+
+.builder-assistant .builder--celebrating .builder-hammer-arm {
+  transform: rotate(-60deg);
+}
+
+.builder-assistant .builder--celebrating .builder-sparkles {
+  opacity: 1;
+  animation: ba-twinkle 0.6s ease-in-out 2;
+}
+
+/* closing: quick nod goodbye */
+.builder-assistant .builder--closing .builder-body {
+  animation: ba-squash 0.3s ease-out both;
+}
+
+@keyframes ba-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-3px) rotate(-1deg);
+  }
+}
+
+@keyframes ba-shadow {
+  0%,
+  100% {
+    transform: scaleX(1);
+    opacity: 0.2;
+  }
+  50% {
+    transform: scaleX(0.88);
+    opacity: 0.14;
+  }
+}
+
+@keyframes ba-tap {
+  0%,
+  78%,
+  100% {
+    transform: rotate(0deg);
+  }
+  84% {
+    transform: rotate(-16deg);
+  }
+  90% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes ba-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+
+@keyframes ba-notice {
+  0% {
+    transform: rotate(0deg);
+  }
+  45% {
+    transform: rotate(-7deg) translateY(-2px);
+  }
+  100% {
+    transform: rotate(-4deg);
+  }
+}
+
+@keyframes ba-pop {
+  from {
+    transform: scale(0.2);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes ba-wave {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  35% {
+    transform: rotate(-32deg);
+  }
+  70% {
+    transform: rotate(-8deg);
+  }
+}
+
+@keyframes ba-talk {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes ba-strike {
+  0% {
+    transform: rotate(0deg);
+  }
+  45% {
+    transform: rotate(-75deg);
+  }
+  80% {
+    transform: rotate(18deg);
+  }
+  100% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes ba-squash {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  45% {
+    transform: scale(1, 1);
+  }
+  60% {
+    transform: scale(1.05, 0.94);
+  }
+  80% {
+    transform: scale(0.98, 1.02);
+  }
+}
+
+@keyframes ba-thought {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes ba-nod {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-2deg) translateY(1px);
+  }
+}
+
+@keyframes ba-hop {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-7px) rotate(-2deg);
+  }
+}
+
+@keyframes ba-twinkle {
+  0%,
+  100% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+/* Reduced motion: keep every state legible, drop the movement */
+@media (prefers-reduced-motion: reduce) {
+  .builder-assistant *,
+  .builder-assistant *::before,
+  .builder-assistant *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .builder-assistant .ba-impact {
+    display: none;
+  }
+}

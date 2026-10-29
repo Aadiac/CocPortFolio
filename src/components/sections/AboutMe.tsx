@@ -7,7 +7,7 @@ import AnimatedHeading from '@/components/ui/AnimateHeading';
 import FlowField from '@/components/canvas/FlowField';
 
 // TODO: Replace these with your real experience, recognition, certifications, and education.
-const CREDENTIALS = [
+export const CREDENTIALS = [
   {
     year: '2026',
     title: 'Your current role',
