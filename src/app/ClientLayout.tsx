@@ -5,6 +5,7 @@ import { site } from '@/lib/site';
 import SmoothScrollProvider from '@/components/providers/SmoothScrollProvider';
 import GlobalPreloader from '@/components/shared/GlobalPreloader';
 import CustomCursor from '@/components/shared/CustomCursor';
+import ChatBot from '@/components/shared/ChatBot';
 import Providers from './providers';
 
 declare global {
@@ -63,6 +64,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <SmoothScrollProvider>
         <Providers>{children}</Providers>
       </SmoothScrollProvider>
+
+      <ChatBot />
     </>
   );
 }

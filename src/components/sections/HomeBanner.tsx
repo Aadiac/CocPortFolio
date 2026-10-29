@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { gsap, ScrollTrigger, SplitText, useGSAP } from '@/lib/gsap';
 import dynamic from 'next/dynamic';
 import AnimatedButton from '@/components/ui/AnimatedButton';
-import Magnetic from '@/components/ui/Magnetic';
 import { EASE } from '@/lib/motion';
 import { site } from '@/lib/site';
 import { useReducedMotion } from '@/lib/useReducedMotion';
@@ -61,42 +60,11 @@ const RoleTicker = () => {
   );
 };
 
-const StampBadge = ({ onClick }: { onClick: () => void }) => (
-  <Magnetic strength={0.35}>
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label="Scroll to contact section"
-      className="group relative w-28 h-28 lg:w-36 lg:h-36 rounded-full grid place-items-center select-none"
-    >
-      <svg viewBox="0 0 200 200" className="stamp-disc absolute inset-0 w-full h-full" aria-hidden="true">
-        <defs>
-          <path id="stamp-circle" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" />
-        </defs>
-        <text
-          className="fill-charcoal font-marquee uppercase"
-          style={{ fontSize: '17px', letterSpacing: '0.2em' }}
-        >
-          <textPath href="#stamp-circle">
-            AVAILABLE FOR WORK • LET&apos;S BUILD • 
-          </textPath>
-        </text>
-      </svg>
-      <span className="grid place-items-center w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-accent text-white transition-transform duration-300 ease-out group-hover:scale-110 group-hover:-rotate-45">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <path d="M7 7l10 10M17 7v10H7" />
-        </svg>
-      </span>
-    </button>
-  </Magnetic>
-);
-
 const HomeBanner = () => {
   const nameRef = useRef<HTMLHeadingElement>(null);
   const paragraphRef = useRef<HTMLParagraphElement>(null);
   const tickerRef = useRef<HTMLDivElement>(null);
   const buttonsRef = useRef<HTMLDivElement>(null);
-  const stampRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
   const innerContentRef = useRef<HTMLDivElement>(null);
   const spotlightRef = useRef<HTMLDivElement>(null);
@@ -127,7 +95,6 @@ const HomeBanner = () => {
     });
     gsap.set([paragraphRef.current, tickerRef.current], { y: 34, opacity: 0 });
     gsap.set(buttonsRef.current?.children ?? [], { y: 26, opacity: 0, scale: 0.96 });
-    gsap.set(stampRef.current, { scale: 0, rotate: -30, opacity: 0 });
 
     const tl = gsap.timeline({ defaults: { ease: EASE.outQuart }, delay: 0.05 });
     tl.to(chars, {
@@ -143,8 +110,7 @@ const HomeBanner = () => {
         buttonsRef.current?.children ?? [],
         { y: 0, opacity: 1, scale: 1, duration: 0.6, stagger: 0.08, ease: 'back.out(1.6)' },
         '-=0.45'
-      )
-      .to(stampRef.current, { scale: 1, rotate: 0, opacity: 1, duration: 0.9, ease: 'elastic.out(1, 0.55)' }, '-=0.6');
+      );
 
     const enterHandler = () => {
       gsap.to(chars, {
@@ -189,7 +155,6 @@ const HomeBanner = () => {
     });
     gsap.set([paragraphRef.current, tickerRef.current], { y: 34, opacity: 0 });
     gsap.set(buttonsRef.current?.children ?? [], { y: 26, opacity: 0, scale: 0.96 });
-    gsap.set(stampRef.current, { scale: 0, rotate: -30, opacity: 0 });
   }, [reduced, playIntro]);
 
   useEffect(() => {
@@ -290,10 +255,6 @@ const HomeBanner = () => {
               </span>
             </span>
           </h1>
-
-          <div ref={stampRef} className="absolute -top-6 right-0 lg:right-4 xl:right-10 hidden sm:block opacity-0">
-            <StampBadge onClick={() => handleScroll('contact')} />
-          </div>
         </div>
 
         <div className="flex justify-center items-center py-1 md:py-3 px-4 sm:px-6 w-full">
