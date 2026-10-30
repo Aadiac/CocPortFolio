@@ -191,7 +191,7 @@ const TechStack = () => {
     <section
       ref={containerRef}
       id="tech-stack"
-      className="bg-ink text-light pt-24 pb-16 md:pt-32 md:pb-20 rounded-b-4xl overflow-hidden"
+      className="bg-ink texture-wood text-light pt-24 pb-16 md:pt-32 md:pb-20 rounded-b-4xl overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16">
         <div className="mb-10 md:mb-14 hidden md:block">
@@ -221,10 +221,10 @@ const TechStack = () => {
                 key={option.id}
                 type="button"
                 onClick={() => setActiveFilter(option.id)}
-                className={`text-xs sm:text-sm font-mono tracking-wider px-3.5 py-1.5 rounded-full border transition-all duration-300 cursor-pointer ${
+                className={`text-xs sm:text-sm font-mono tracking-wider px-3.5 py-1.5 rounded-[10px] border-2 transition-all duration-300 cursor-pointer ${
                   isActive
-                    ? 'bg-cream text-ink border-cream font-semibold shadow-md'
-                    : 'bg-elevated-dark/60 text-gray-soft border-white/10 hover:border-accent/40 hover:text-cream'
+                    ? 'bg-gold text-charcoal border-gold-dark font-semibold shadow-[0_3px_0_#B97F0F]'
+                    : 'bg-elevated text-light border-wood shadow-[0_3px_0_#170F08] hover:border-gold hover:text-parchment'
                 }`}
               >
                 {option.label}
@@ -251,7 +251,7 @@ const TechStack = () => {
                 >
                   {stack.title}
                 </h3>
-                <span className="font-mono text-xs text-warm tracking-widest uppercase block mt-2">
+                <span className="font-mono text-xs text-warm-light tracking-widest uppercase block mt-2">
                   {stack.technologies.length} Technologies
                 </span>
               </div>
@@ -260,7 +260,7 @@ const TechStack = () => {
                 {stack.technologies.map((tech, i) => (
                   <div
                     key={i}
-                    className="tech-item flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all duration-300 hover:bg-elevated-dark/60 border border-white/[0.04] hover:border-accent/30 bg-surface/50"
+                    className="tech-item chip-parchment flex items-center gap-3 p-3 cursor-pointer transition-[filter] duration-300 hover:brightness-105"
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                   >
@@ -273,7 +273,7 @@ const TechStack = () => {
                         className="w-full h-full object-contain"
                       />
                     </div>
-                    <p className="text-xs sm:text-sm font-mono font-bold text-cream break-words">
+                    <p className="text-xs sm:text-sm font-mono font-bold text-charcoal break-words">
                       {tech.name}
                     </p>
                   </div>

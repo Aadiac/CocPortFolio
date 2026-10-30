@@ -211,7 +211,7 @@ const About = () => {
       <section
         ref={sectionRef}
         id="about"
-        className="min-h-screen bg-ink text-light pt-24 pb-20 md:pt-32 md:pb-28 rounded-t-4xl overflow-hidden"
+        className="min-h-screen bg-ink texture-wood text-light pt-24 pb-20 md:pt-32 md:pb-28 rounded-t-4xl overflow-hidden"
       >
         <div className="max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16">
           <div className="mb-10 md:mb-20">
@@ -269,7 +269,7 @@ const About = () => {
                   ref={pathRef}
                   d="M32 0 C25 84 39 164 32 250 C25 334 39 416 32 500 C25 584 39 666 32 750 C25 834 39 916 32 1000"
                   fill="none"
-                  stroke="rgba(232, 228, 222, 0.28)"
+                  stroke="rgba(244, 233, 208, 0.28)"
                   strokeWidth="1.5"
                 />
               </svg>

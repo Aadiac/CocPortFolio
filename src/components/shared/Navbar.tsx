@@ -81,7 +81,7 @@ const MagneticHamburgerButton: React.FC<MagneticHamburgerButtonProps> = ({ isOpe
         onClick={onClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleButtonMouseLeave}
-        className="relative w-12 h-12 md:w-15 md:h-15 rounded-full overflow-hidden bg-[#111A16] border border-white/15 outline-none flex items-center justify-center cursor-pointer shadow-xl group"
+        className="relative w-12 h-12 md:w-15 md:h-15 rounded-full overflow-hidden bg-wood border-2 border-wood-dark outline-none flex items-center justify-center cursor-pointer shadow-[0_4px_0_#4A2C14,0_10px_18px_rgba(20,12,4,0.25)] group"
         style={{ transformOrigin: 'center' }}
         aria-label="Toggle menu"
         aria-expanded={isOpen}
@@ -95,13 +95,13 @@ const MagneticHamburgerButton: React.FC<MagneticHamburgerButtonProps> = ({ isOpe
 
         <div className="relative z-10 w-5 h-3 flex items-center justify-center pointer-events-none">
           <span
-            className={`absolute w-full h-[2px] rounded-full bg-[#E2E8E4] transition-all duration-300 ease-[cubic-bezier(0.76,0,0.24,1)] ${
+            className={`absolute w-full h-[2px] rounded-full bg-parchment transition-all duration-300 ease-[cubic-bezier(0.76,0,0.24,1)] ${
               isOpen ? 'top-1/2 -translate-y-1/2 rotate-45' : 'top-0 rotate-0'
             }`}
             style={{ transformOrigin: 'center' }}
           />
           <span
-            className={`absolute w-full h-[2px] rounded-full bg-[#E2E8E4] transition-all duration-300 ease-[cubic-bezier(0.76,0,0.24,1)] ${
+            className={`absolute w-full h-[2px] rounded-full bg-parchment transition-all duration-300 ease-[cubic-bezier(0.76,0,0.24,1)] ${
               isOpen ? 'bottom-1/2 translate-y-1/2 -rotate-45' : 'bottom-0 rotate-0'
             }`}
             style={{ transformOrigin: 'center' }}
@@ -352,7 +352,7 @@ const FullscreenMenu: React.FC<FullscreenMenuProps> = ({ isOpen, onClose, handle
           <path
             ref={curvePathRef}
             d="M100 0 L200 0 L200 100 L100 100 Q100 50 100 0"
-            fill="#0B110E"
+            fill="#21160D"
           />
         </svg>
 
@@ -623,7 +623,7 @@ const Navbar: React.FC<NavbarProps> = ({ hamburgerOnly = false }) => {
           <div className="w-full px-6 sm:px-8 md:px-12 lg:px-16 flex justify-end items-center">
             <ul
               ref={linksContainerRef}
-              className="flex gap-6 text-warm text-base font-display uppercase tracking-wider"
+              className="wood-plank flex gap-6 px-6 py-2.5 text-base font-display uppercase tracking-wider"
             >
               {links.filter((l) => !l.menuOnly).map((link) => (
                 <AnimatedLink key={link.href}>

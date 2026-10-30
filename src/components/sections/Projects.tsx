@@ -314,9 +314,11 @@ function MobileSnapProjects({ projects, router }: MobileSnapProjectsProps) {
               sessionStorage.setItem('previous-project-url', window.location.pathname);
             }}
             ref={(el) => { cardRefs.current[index] = el; }}
-            className="overflow-hidden rounded-3xl block no-underline text-inherit"
-            style={{ background: '#111110', boxShadow: '0 8px 32px rgba(0,0,0,0.18)' }}
+            className="achievement-card relative mt-4 block no-underline text-inherit"
           >
+            <span className="achievement-ribbon absolute -top-3.5 left-5 z-10" aria-hidden="true">
+              ★ Achievement unlocked
+            </span>
             <div className="p-3 pb-0">
               <div
                 className="mc-img-wrap relative overflow-hidden rounded-2xl"
@@ -343,7 +345,7 @@ function MobileSnapProjects({ projects, router }: MobileSnapProjectsProps) {
                   className="mc-num font-mono font-black leading-none"
                   style={{
                     fontSize: 'clamp(2rem, 9vw, 2.6rem)',
-                    color: '#34D399',
+                    color: '#4F9A2D',
                     letterSpacing: '-0.03em',
                   }}
                 >
@@ -355,13 +357,8 @@ function MobileSnapProjects({ projects, router }: MobileSnapProjectsProps) {
                 {project.tech.slice(0, 3).map((t) => (
                   <span
                     key={t}
-                    className="mc-tag font-mono uppercase tracking-widest px-2.5 py-1 rounded-full"
-                    style={{
-                      fontSize: 9,
-                      background: 'rgba(255,255,255,0.08)',
-                      color: 'rgba(255,255,255,0.85)',
-                      border: '1px solid rgba(255,255,255,0.15)',
-                    }}
+                    className="mc-tag font-mono uppercase tracking-widest px-2.5 py-1 rounded-lg bg-parchment-deep border border-wood/40 text-charcoal"
+                    style={{ fontSize: 9 }}
                   >
                     {t}
                   </span>
@@ -369,24 +366,22 @@ function MobileSnapProjects({ projects, router }: MobileSnapProjectsProps) {
               </div>
 
               <h3
-                className="mc-title font-black uppercase leading-tight text-white mb-4"
+                className="mc-title font-black uppercase leading-tight text-charcoal mb-4"
                 style={{ fontSize: 'clamp(1.3rem, 5.5vw, 2rem)', letterSpacing: '-0.025em' }}
               >
                 {project.title}
               </h3>
 
               <div className="mc-cta" style={{ opacity: 0 }}>
-                <div className="h-px w-full mb-4" style={{ background: 'rgba(255,255,255,0.07)' }} />
+                <div className="h-px w-full mb-4 bg-wood/25" />
                 <div className="flex items-center justify-between">
                   <span
-                    className="font-mono text-[11px] uppercase tracking-widest"
-                    style={{ color: 'rgba(255,255,255,0.45)' }}
+                    className="font-mono text-[11px] uppercase tracking-widest text-warm"
                   >
                     View Project
                   </span>
                   <span
-                    className="flex items-center justify-center w-9 h-9 rounded-full text-[#0A0F0D] text-sm"
-                    style={{ background: '#34D399', boxShadow: '0 0 16px rgba(52, 211, 153, 0.35)' }}
+                    className="btn-game btn-game--gold flex items-center justify-center w-9 h-9 text-sm"
                   >
                     →
                   </span>
@@ -585,7 +580,7 @@ export default function ProjectsPage() {
       id="projects"
       ref={containerRef}
       onMouseLeave={handleTableMouseLeave}
-      className="relative w-full bg-cream text-charcoal overflow-hidden"
+      className="relative w-full bg-cream texture-parchment text-charcoal overflow-hidden"
     >
       <div className="hidden md:block pt-16 pb-20 md:pt-20 md:pb-24 px-6 sm:px-8 md:px-12 lg:px-16 max-w-7xl mx-auto">
         <div className="mb-12">
@@ -594,14 +589,13 @@ export default function ProjectsPage() {
             className="text-[clamp(2.5rem,7vw,6.5rem)] leading-none text-charcoal"
           />
         </div>
-        <hr className="border-t border-border w-full mb-4" />
 
         <div className="flex flex-col w-full" onMouseLeave={handleTableMouseLeave}>
           {projects.map((project, index) => (
             <Link
               key={project.id}
               href={`/projects/${project.slug}`}
-              className="project-row-desktop relative flex items-stretch border-b border-border py-8 min-h-[120px] group cursor-pointer no-underline"
+              className="project-row-desktop achievement-card relative flex items-stretch mt-8 px-8 pt-10 pb-7 min-h-[120px] group cursor-pointer no-underline"
               onMouseEnter={(e) => {
                 mouse.current.x = e.clientX;
                 mouse.current.y = e.clientY;
@@ -610,6 +604,9 @@ export default function ProjectsPage() {
               data-cursor="view"
               onClick={handleRowClick}
             >
+              <span className="achievement-ribbon absolute -top-3.5 left-6" aria-hidden="true">
+                ★ Achievement unlocked
+              </span>
               <div className="flex-[0_0_80px] font-mono text-[13px] text-gray-soft pt-2 relative h-6 overflow-hidden">
                 <span className="block absolute transition-all duration-300 ease-out group-hover:-translate-y-full group-hover:opacity-0">
                   {String(index + 1).padStart(2, '0')}
@@ -633,9 +630,9 @@ export default function ProjectsPage() {
                   </span>
                 </h3>
 
-                <div className="mt-3 flex flex-wrap gap-2 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-out">
+                <div className="mt-3 flex flex-wrap gap-2">
                   {project.tech.map((t) => (
-                    <span key={t} className="px-3 py-1 rounded-full bg-transparent border border-gray-300 text-warm text-xs font-medium">
+                    <span key={t} className="px-3 py-1 rounded-lg bg-parchment-deep border border-wood/40 text-charcoal text-xs font-semibold">
                       {t}
                     </span>
                   ))}
@@ -643,7 +640,7 @@ export default function ProjectsPage() {
               </div>
 
               <div className="flex-[0_0_200px] text-right flex flex-col justify-end items-end pb-2">
-                <span className="font-mono text-xs uppercase tracking-widest text-charcoal group-hover:text-accent transition-colors duration-250 flex items-center gap-1">
+                <span className="btn-game btn-game--gold px-4 py-2.5 font-mono text-xs uppercase tracking-widest flex items-center gap-1">
                   <span>View Project</span>
                   <span className="inline-block transition-transform duration-200 group-hover:translate-x-1.5">
                     →
@@ -651,7 +648,6 @@ export default function ProjectsPage() {
                 </span>
               </div>
 
-              <div className="absolute bottom-0 left-0 h-[2px] bg-accent w-0 hover-line-ref pointer-events-none" />
             </Link>
           ))}
         </div>

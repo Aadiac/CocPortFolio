@@ -22,8 +22,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   useEffect(() => {
     console.log(
       `%c ${site.name} %c ${site.url} `,
-      'background: #080807; color: #e8e8e3; padding: 4px 8px; border-radius: 4px 0 0 4px; font-family: monospace; font-weight: bold;',
-      'background: #e8e8e3; color: #080807; padding: 4px 8px; border-radius: 0 4px 4px 0; font-family: monospace; font-weight: bold; border: 1px solid #080807;'
+      'background: #4A2C14; color: #F4E9D0; padding: 4px 8px; border-radius: 4px 0 0 4px; font-family: monospace; font-weight: bold;',
+      'background: #F2B632; color: #2B1D12; padding: 4px 8px; border-radius: 0 4px 4px 0; font-family: monospace; font-weight: bold; border: 1px solid #4A2C14;'
     );
 
     let seen = false;

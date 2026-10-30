@@ -30,40 +30,34 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
 
   const Component = as;
 
-  let bgColor, textColor, borderColor, rippleColor, hoverBgColor, originalBgColor;
+  // Game-style surfaces live in globals.css (.btn-game--*); the gradient sits on
+  // background-image, so the GSAP background-color tween only tints underneath it.
+  let variantClass, rippleColor, hoverBgColor, originalBgColor;
   switch (variant) {
     case 'light':
-      bgColor = 'bg-transparent';
-      textColor = 'text-[#141516]';
-      borderColor = 'border-2 border-[#141516]';
-      rippleColor = 'rgba(20, 21, 22, 0.1)';
-      hoverBgColor = 'rgba(20, 21, 22, 0.06)';
-      originalBgColor = 'transparent';
+      variantClass = 'btn-game--gold';
+      rippleColor = 'rgba(255, 255, 255, 0.3)';
+      hoverBgColor = '#F2B632';
+      originalBgColor = '#F2B632';
       break;
     case 'primary':
-      bgColor = 'bg-accent';
-      textColor = 'text-white';
-      borderColor = 'border border-accent';
+      variantClass = 'btn-game--green';
       rippleColor = 'rgba(255, 255, 255, 0.25)';
-      hoverBgColor = '#059669';
-      originalBgColor = '#34D399';
+      hoverBgColor = '#5FB13A';
+      originalBgColor = '#5FB13A';
       break;
     case 'outline':
-      bgColor = 'bg-transparent';
-      textColor = 'text-[#45524B]';
-      borderColor = 'border border-[#111A16]/25';
-      rippleColor = 'rgba(17, 26, 22, 0.08)';
-      hoverBgColor = 'rgba(17, 26, 22, 0.04)';
-      originalBgColor = 'transparent';
+      variantClass = 'btn-game--parchment';
+      rippleColor = 'rgba(122, 74, 36, 0.12)';
+      hoverBgColor = '#F1DFB1';
+      originalBgColor = '#F1DFB1';
       break;
     case 'dark':
     default:
-      bgColor = 'bg-[#111A16]';
-      textColor = 'text-cream';
-      borderColor = 'border border-[#111A16]';
+      variantClass = 'btn-game--wood';
       rippleColor = 'rgba(255, 255, 255, 0.15)';
-      hoverBgColor = '#1A2420';
-      originalBgColor = '#111A16';
+      hoverBgColor = '#7A4A24';
+      originalBgColor = '#7A4A24';
       break;
   }
 
@@ -133,7 +127,7 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleButtonMouseLeave}
         disabled={disabled}
-        className={`relative text-xs md:text-sm outline-none overflow-hidden h-10 md:h-12 px-4 sm:px-6 md:px-8 rounded-full ${bgColor} ${textColor} ${borderColor} group cursor-pointer font-medium inline-flex items-center justify-center ${className}`}
+        className={`relative text-xs md:text-sm outline-none overflow-hidden h-10 md:h-12 px-4 sm:px-6 md:px-8 btn-game ${variantClass} group cursor-pointer inline-flex items-center justify-center ${className}`}
         style={{ transformOrigin: 'center' }}
         {...props}
       >

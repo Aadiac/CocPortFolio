@@ -15,33 +15,42 @@
 
   --spacing-section: clamp(6rem, 12vw, 11rem);
 
-  --color-cream: #E2E8E4;
-  --color-ink: #0A0F0D;
-  --color-accent: #34D399;
-  --color-accent-light: #6EE7B7;
-  --color-accent-muted: #10B981;
-  --color-warm: #45524B;
-  --color-warm-light: #94A39B;
-  --color-muted: #A3B3AA;
-  --color-light: #CAD4CE;
-  --color-elevated: #1A2420;
-  --color-elevated-dark: #121A16;
-  --color-surface: #0B110E;
-  --color-surface-base: #070A09;
-  --color-surface-card: #0F1613;
-  --color-surface-float: #141D19;
-  --color-surface-border: #1C2923;
-  --color-surface-mid: #111A16;
-  --color-border: #C8D2CC;
-  --color-border-dark: #BEC8C2;
-  --color-border-subtle: #24332B;
-  --color-border-subtler: #1A2620;
-  --color-charcoal: #131B17;
-  --color-gray-soft: #90A097;
-  --color-gray-mid: #44544C;
-  --color-gray-btn: #46574F;
-  --color-footer-bg: #D7E0DA;
-  --color-footer-border: #C5CFC9;
+  --color-cream: #F4E9D0;
+  --color-ink: #1F150D;
+  --color-accent: #4F9A2D;
+  --color-accent-light: #F2B632;
+  --color-accent-muted: #3D7D22;
+  --color-warm: #5C4330;
+  --color-warm-light: #A08A70;
+  --color-muted: #B5A288;
+  --color-light: #EADCBD;
+  --color-elevated: #3A2716;
+  --color-elevated-dark: #2A1C10;
+  --color-surface: #21160D;
+  --color-surface-base: #170F08;
+  --color-surface-card: #261A0F;
+  --color-surface-float: #2E2013;
+  --color-surface-border: #3D2A18;
+  --color-surface-mid: #271A0F;
+  --color-border: #D9C69F;
+  --color-border-dark: #CDB88E;
+  --color-border-subtle: #3F2C19;
+  --color-border-subtler: #33230F;
+  --color-charcoal: #2B1D12;
+  --color-gray-soft: #A8957B;
+  --color-gray-mid: #5C4A38;
+  --color-gray-btn: #66523E;
+  --color-footer-bg: #EADCBD;
+  --color-footer-border: #D8C6A0;
+  --color-gold: #F2B632;
+  --color-gold-light: #FFD66B;
+  --color-gold-dark: #B97F0F;
+  --color-wood: #7A4A24;
+  --color-wood-light: #A8693A;
+  --color-wood-dark: #4A2C14;
+  --color-parchment: #FBF1D6;
+  --color-parchment-deep: #F1DFB1;
+  --color-grass-light: #8BD65A;
   --ease-in-expo: cubic-bezier(0.1, 0, 0.3, 1);
   --ease-custom: cubic-bezier(0.76, 0, 0.24, 1);
 }
@@ -76,6 +85,37 @@ body.preloader-active {
   overflow: hidden;
 }
 
+/* Builder loading sequence: frames stacked, only the active one visible */
+.preloader-builder {
+  position: relative;
+  height: clamp(170px, 34vh, 300px);
+  aspect-ratio: 353 / 440;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.45));
+}
+
+.preloader-builder-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: 50% 100%;
+  pointer-events: none;
+}
+
+.preloader-builder--impact {
+  animation: preloader-thud 0.16s ease-out;
+}
+
+@keyframes preloader-thud {
+  0% {
+    transform: translateY(3px);
+  }
+  100% {
+    transform: none;
+  }
+}
+
 html {
   touch-action: pan-y;
   scrollbar-width: none;
@@ -91,15 +131,15 @@ body {
 }
 
 ::selection {
-  background: #34D399;
-  color: #0A0F0D;
+  background: #F2B632;
+  color: #2B1D12;
 }
 
 .bg-primary {
-  background-color: #6EE7B7;
+  background-color: #F2B632;
 }
 .bg-foreground {
-  background-color: #1C2923;
+  background-color: #3D2A18;
 }
 
 .film-grain {
@@ -139,20 +179,20 @@ body {
 
 .marquee-row-light::before {
   left: 0;
-  background: linear-gradient(to right, #E2E8E4, transparent);
+  background: linear-gradient(to right, #F4E9D0, transparent);
 }
 .marquee-row-light::after {
   right: 0;
-  background: linear-gradient(to left, #E2E8E4, transparent);
+  background: linear-gradient(to left, #F4E9D0, transparent);
 }
 
 .marquee-row-dark::before {
   left: 0;
-  background: linear-gradient(to right, #0A0F0D, transparent);
+  background: linear-gradient(to right, #1F150D, transparent);
 }
 .marquee-row-dark::after {
   right: 0;
-  background: linear-gradient(to left, #0A0F0D, transparent);
+  background: linear-gradient(to left, #1F150D, transparent);
 }
 
 .marquee-content-left {
@@ -221,7 +261,7 @@ body.cursor-disabled * {
 }
 
 :focus-visible {
-  outline: 2px solid #34D399;
+  outline: 3px solid #F2B632;
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -232,8 +272,8 @@ body.cursor-disabled * {
   left: 1rem;
   z-index: 10002;
   padding: 0.75rem 1.25rem;
-  background: #0A0F0D;
-  color: #E2E8E4;
+  background: #1F150D;
+  color: #F4E9D0;
   font-family: var(--font-geist-mono), monospace;
   font-size: 0.75rem;
   letter-spacing: 0.12em;
@@ -256,4 +296,152 @@ body.cursor-disabled * {
 .text-outline {
   color: transparent;
   -webkit-text-stroke: 1px currentColor;
+}
+
+/* Village theme ------------------------------------------------------------
+ * Shared game-style surfaces that echo the Builder chat: chunky 3D buttons,
+ * parchment cards, wood frames and carved headings.
+ */
+
+.texture-parchment {
+  background-image:
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.45), transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(201, 150, 70, 0.14), transparent 45%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.3 0 0 0 0 0.15 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.texture-wood {
+  background-image: repeating-linear-gradient(176deg, rgba(255, 255, 255, 0.025) 0 2px, transparent 2px 11px);
+}
+
+.heading-carved {
+  text-shadow: 0 0.06em 0 rgba(74, 44, 20, 0.45);
+}
+
+/* Game buttons */
+.btn-game {
+  border-radius: 14px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  transition:
+    filter 0.15s ease,
+    box-shadow 0.12s ease;
+}
+.btn-game:hover {
+  filter: brightness(1.06);
+}
+.btn-game:active {
+  filter: brightness(0.97);
+}
+.btn-game--green {
+  background-image: linear-gradient(180deg, #8bd65a 0%, #5fb13a 55%, #4f9a2d 100%);
+  border: 2px solid #3d7d22;
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(30, 60, 15, 0.7);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.35),
+    0 4px 0 #3d7d22;
+}
+.btn-game--gold {
+  background-image: linear-gradient(180deg, #ffd66b 0%, #f2b632 55%, #dc9a16 100%);
+  border: 2px solid #b97f0f;
+  color: #2b1d12;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.45),
+    0 4px 0 #b97f0f;
+}
+.btn-game--parchment {
+  background-image: linear-gradient(180deg, #fffaf0, #f1dfb1);
+  border: 2px solid #7a4a24;
+  color: #4a2c14;
+  box-shadow: 0 4px 0 #4a2c14;
+}
+.btn-game--wood {
+  background-image:
+    repeating-linear-gradient(176deg, rgba(255, 255, 255, 0.06) 0 2px, transparent 2px 9px),
+    linear-gradient(180deg, #a8693a, #7a4a24);
+  border: 2px solid #4a2c14;
+  color: #fff8e7;
+  text-shadow: 0 1px 0 #4a2c14;
+  box-shadow: 0 4px 0 #4a2c14;
+}
+.btn-game--green:active {
+  box-shadow: 0 1px 0 #3d7d22;
+}
+.btn-game--gold:active {
+  box-shadow: 0 1px 0 #b97f0f;
+}
+.btn-game--parchment:active,
+.btn-game--wood:active {
+  box-shadow: 0 1px 0 #4a2c14;
+}
+
+/* Wooden plank (desktop nav) */
+.wood-plank {
+  border: 3px solid #4a2c14;
+  border-radius: 14px;
+  background:
+    repeating-linear-gradient(176deg, rgba(255, 255, 255, 0.06) 0 2px, transparent 2px 9px),
+    linear-gradient(180deg, #a8693a, #7a4a24);
+  box-shadow:
+    inset 0 0 0 1px rgba(242, 182, 50, 0.5),
+    0 4px 0 #4a2c14,
+    0 10px 18px rgba(20, 12, 4, 0.25);
+  color: #fff8e7;
+  text-shadow: 0 2px 0 #4a2c14;
+}
+
+/* Parchment chip (tech stack items) */
+.chip-parchment {
+  border: 2px solid #7a4a24;
+  border-radius: 12px;
+  background-image: linear-gradient(180deg, #fffaf0, #f1dfb1);
+  color: #2b1d12;
+  box-shadow: 0 3px 0 #4a2c14;
+}
+
+/* Achievement card (project rows) */
+.achievement-card {
+  border: 3px solid #4a2c14;
+  border-radius: 18px;
+  background-image: linear-gradient(180deg, #fffaf0, #f1dfb1);
+  box-shadow:
+    inset 0 0 0 2px #f2b632,
+    0 5px 0 #4a2c14,
+    0 16px 28px rgba(20, 12, 4, 0.18);
+}
+.achievement-ribbon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.85rem;
+  border: 2px solid #b97f0f;
+  border-radius: 8px;
+  background-image: linear-gradient(180deg, #ffd66b, #f2b632);
+  color: #2b1d12;
+  font-family: var(--font-supercell), sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: 0 3px 0 #b97f0f;
+}
+
+/* Wooden frame with parchment body (contact form) */
+.wood-frame {
+  border: 5px solid #4a2c14;
+  border-radius: 20px;
+  background-image: linear-gradient(180deg, #fbf1d6, #f1dfb1);
+  box-shadow:
+    inset 0 0 0 2px #a8693a,
+    0 6px 0 #170f08,
+    0 24px 40px rgba(0, 0, 0, 0.35);
+}
+.input-parchment {
+  border: 2px solid #7a4a24;
+  background-color: #fffaf0;
+  color: #2b1d12;
+  box-shadow: inset 0 2px 3px rgba(74, 44, 20, 0.18);
+}
+.input-parchment::placeholder {
+  color: #8b7259;
 }

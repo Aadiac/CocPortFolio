@@ -91,7 +91,7 @@ const AnimatedHeading: React.FC<AnimatedHeadingProps> = ({
   return (
     <div ref={rootRef} className={containerClassName}>
       <h2
-        className={`font-display font-black uppercase tracking-tighter leading-none ${className}`}
+        className={`heading-carved font-display font-black uppercase tracking-tighter leading-none ${className}`}
         aria-label={plainText}
       >
         <span aria-hidden="true" className="flex flex-wrap items-baseline gap-x-[0.24em]">
@@ -112,7 +112,7 @@ const AnimatedHeading: React.FC<AnimatedHeadingProps> = ({
           ))}
         </span>
       </h2>
-      {showLine && <div className="ah-line h-1 w-24 origin-left bg-gradient-to-r from-accent to-transparent mt-1" />}
+      {showLine && <div className="ah-line h-1.5 w-28 origin-left rounded-full bg-gradient-to-r from-gold via-gold-light to-transparent shadow-[0_2px_0_rgba(74,44,20,0.5)] mt-1" />}
     </div>
   );
 };

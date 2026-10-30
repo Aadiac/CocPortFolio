@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { RotateCcw, Send, X } from 'lucide-react';
-import Builder from '@/components/shared/Builder';
+import { BuilderPortrait } from '@/components/shared/builder/BuilderSprite';
 import BuilderMessage, { type ChatMessage } from '@/components/shared/builder/BuilderMessage';
 import {
   getBotReply,
@@ -287,7 +287,7 @@ const BuilderChatPanel = ({ phase, onClose, onActivity }: BuilderChatPanelProps)
     >
       <header className="ba-header">
         <span className="ba-portrait" aria-hidden="true">
-          <Builder state={busy ? 'thinking' : 'ready'} portrait />
+          <BuilderPortrait state={busy ? 'thinking' : 'ready'} hovered={false} animate={!reduced && phase === 'open'} />
         </span>
         <div className="ba-header-text">
           <h2 id="builder-chat-title" className="ba-title">

@@ -188,11 +188,11 @@ const Contact = () => {
 
           <form
             onSubmit={handleSubmit}
-            className="max-w-2xl space-y-6 p-6 sm:p-8 rounded-2xl mx-auto bg-surface-mid border border-white/[0.04]"
+            className="wood-frame max-w-2xl space-y-6 p-6 sm:p-8 mx-auto"
           >
             <div className="flex flex-col gap-2">
-              <label htmlFor="name" className="font-medium text-sm sm:text-base text-muted">
-                Your Name <span className="text-red-400">*</span>
+              <label htmlFor="name" className="font-bold text-sm sm:text-base text-wood-dark">
+                Your Name <span className="text-red-700">*</span>
               </label>
               <input
                 id="name"
@@ -204,17 +204,17 @@ const Contact = () => {
                 autoComplete="name"
                 aria-invalid={!!errors.name}
                 aria-describedby={errors.name ? 'name-error' : undefined}
-                className={`w-full px-4 py-3 text-sm sm:text-base border rounded-xl bg-surface text-cream placeholder-[#6a6a68] focus:outline-none transition-all duration-300 border-white/[0.08] focus:border-accent focus:ring-1 focus:ring-accent/30 ${
-                  errors.name ? 'border-red-500 focus:border-red-500' : ''
+                className={`w-full px-4 py-3 text-sm sm:text-base rounded-xl input-parchment focus:outline-none transition-all duration-300 focus:border-accent focus:ring-2 focus:ring-accent/30 ${
+                  errors.name ? 'border-red-700 focus:border-red-700' : ''
                 }`}
                 disabled={isDisabled}
               />
-              {errors.name && <p id="name-error" className="text-red-400 text-xs sm:text-sm">{errors.name}</p>}
+              {errors.name && <p id="name-error" className="text-red-700 text-xs sm:text-sm">{errors.name}</p>}
             </div>
 
             <div className="flex flex-col gap-2">
-              <label htmlFor="email" className="font-medium text-sm sm:text-base text-muted">
-                Your Email <span className="text-red-400">*</span>
+              <label htmlFor="email" className="font-bold text-sm sm:text-base text-wood-dark">
+                Your Email <span className="text-red-700">*</span>
               </label>
               <input
                 id="email"
@@ -226,17 +226,17 @@ const Contact = () => {
                 placeholder="you@example.com"
                 aria-invalid={!!errors.email}
                 aria-describedby={errors.email ? 'email-error' : undefined}
-                className={`w-full px-4 py-3 text-sm sm:text-base border rounded-xl bg-surface text-cream placeholder-[#6a6a68] focus:outline-none transition-all duration-300 border-white/[0.08] focus:border-accent focus:ring-1 focus:ring-accent/30 ${
-                  errors.email ? 'border-red-500 focus:border-red-500' : ''
+                className={`w-full px-4 py-3 text-sm sm:text-base rounded-xl input-parchment focus:outline-none transition-all duration-300 focus:border-accent focus:ring-2 focus:ring-accent/30 ${
+                  errors.email ? 'border-red-700 focus:border-red-700' : ''
                 }`}
                 disabled={isDisabled}
               />
-              {errors.email && <p id="email-error" className="text-red-400 text-xs sm:text-sm">{errors.email}</p>}
+              {errors.email && <p id="email-error" className="text-red-700 text-xs sm:text-sm">{errors.email}</p>}
             </div>
 
             <div className="flex flex-col gap-2">
-              <label htmlFor="message" className="font-medium text-sm sm:text-base text-muted">
-                Message <span className="text-red-400">*</span>
+              <label htmlFor="message" className="font-bold text-sm sm:text-base text-wood-dark">
+                Message <span className="text-red-700">*</span>
               </label>
               <textarea
                 id="message"
@@ -247,31 +247,31 @@ const Contact = () => {
                 placeholder="Write your message here..."
                 aria-invalid={!!errors.message}
                 aria-describedby={errors.message ? 'message-error' : undefined}
-                className={`w-full px-4 py-3 text-sm sm:text-base border rounded-xl bg-surface text-cream placeholder-[#6a6a68] resize-none focus:outline-none transition-all duration-300 border-white/[0.08] focus:border-accent focus:ring-1 focus:ring-accent/30 ${
-                  errors.message ? 'border-red-500 focus:border-red-500' : ''
+                className={`w-full px-4 py-3 text-sm sm:text-base rounded-xl input-parchment resize-none focus:outline-none transition-all duration-300 focus:border-accent focus:ring-2 focus:ring-accent/30 ${
+                  errors.message ? 'border-red-700 focus:border-red-700' : ''
                 }`}
                 disabled={isDisabled}
               />
-              {errors.message && <p id="message-error" className="text-red-400 text-xs sm:text-sm">{errors.message}</p>}
-              <p className="text-xs text-gray-soft">{formData.message.length} / 30 minimum characters</p>
+              {errors.message && <p id="message-error" className="text-red-700 text-xs sm:text-sm">{errors.message}</p>}
+              <p className="text-xs text-warm">{formData.message.length} / 30 minimum characters</p>
             </div>
 
             <div role="status" aria-live="polite">
               {errors.server && (
-                <div className="p-4 bg-red-900/20 border border-red-600/40 rounded-xl mb-4">
-                  <p className="text-red-400 text-sm">{errors.server}</p>
+                <div className="p-4 bg-red-100 border border-red-700/40 rounded-xl mb-4">
+                  <p className="text-red-700 text-sm">{errors.server}</p>
                 </div>
               )}
 
               {submitStatus === 'success' && (
-                <div className="p-4 bg-green-900/20 border border-green-600/40 rounded-xl mb-4">
-                  <p className="text-green-400 text-sm">{successMessage}</p>
+                <div className="p-4 bg-green-100 border border-green-700/40 rounded-xl mb-4">
+                  <p className="text-green-800 text-sm">{successMessage}</p>
                 </div>
               )}
 
               {submitStatus === 'error' && !errors.server && (
-                <div className="p-4 bg-red-900/20 border border-red-600/40 rounded-xl mb-4">
-                  <p className="text-red-400 text-sm">Something went wrong. Please try again later.</p>
+                <div className="p-4 bg-red-100 border border-red-700/40 rounded-xl mb-4">
+                  <p className="text-red-700 text-sm">Something went wrong. Please try again later.</p>
                 </div>
               )}
             </div>
@@ -332,8 +332,8 @@ const Contact = () => {
           copiedToast ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
         }`}
         style={{
-          background: '#34D399',
-          color: '#0A0F0D',
+          background: '#F2B632',
+          color: '#2B1D12',
           fontFamily: 'monospace',
           fontSize: '0.75rem',
           letterSpacing: '0.1em',

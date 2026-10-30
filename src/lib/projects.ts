@@ -47,7 +47,7 @@ const projects: Project[] = [
       { value: '—', label: 'Add a metric' },
       { value: '—', label: 'Add a metric' },
     ],
-    accent: '#34D399',
+    accent: '#4F9A2D',
     myRole: [
       'Describe a responsibility you owned end to end.',
       'Describe a second responsibility and the impact it had.',

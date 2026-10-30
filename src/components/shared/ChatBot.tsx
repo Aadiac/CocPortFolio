@@ -3,7 +3,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { X } from 'lucide-react';
-import Builder, { type BuilderState } from '@/components/shared/Builder';
+import type { BuilderState } from '@/components/shared/Builder';
+import {
+  BuilderFigure,
+  BuilderPortrait,
+  preloadBuilderSprites,
+  type BodyPose,
+} from '@/components/shared/builder/BuilderSprite';
 import { WELCOME_TEXT } from '@/lib/chatbot';
 import { useReducedMotion } from '@/lib/useReducedMotion';
 import { safeSessionStorage } from '@/utils/storage';
@@ -24,10 +30,29 @@ const PANEL_AT = 170;
 const SETTLE_AT = 620;
 const CLOSE_DURATION = 220;
 
+// Full-body hammer strike (wide screens): raise pose, then strike pose, then the panel opens.
+const STRIKE_AT = 160;
+const STAGE_PANEL_AT = 340;
+const STAGE_HIDE_AT = 340;
+const STAGE_FADE_MS = 320;
+const IMPACT_DURATION = 600;
+
+// The full-body figure only has room beside the icon on wider screens.
+const hasStageRoom = () => typeof window !== 'undefined' && window.matchMedia('(min-width: 640px)').matches;
+
 const ACTIVITY_DURATION: Partial<Record<BuilderState, number>> = {
   responding: 900,
   celebrating: 1300,
 };
+
+const Impact = () => (
+  <span className="ba-impact" aria-hidden="true">
+    <span className="ba-impact-ring" />
+    {[0, 1, 2, 3, 4, 5].map((i) => (
+      <span key={i} className="ba-impact-spark" style={{ '--i': i } as React.CSSProperties} />
+    ))}
+  </span>
+);
 
 /**
  * Builder assistant orchestrator: owns the character state machine, the greeting bubble,
@@ -38,14 +63,24 @@ const ChatBot = () => {
   const [panelMounted, setPanelMounted] = useState(false);
   const [character, setCharacter] = useState<BuilderState>('idle');
   const [greetingVisible, setGreetingVisible] = useState(false);
-  const [impactKey, setImpactKey] = useState(0);
+  // One spark burst at a time, rendered where the hammer lands (full-body figure or icon).
+  const [impact, setImpact] = useState<{ key: number; target: 'stage' | 'trigger' } | null>(null);
+  const [hovered, setHovered] = useState(false);
+  const [stagePose, setStagePose] = useState<BodyPose | null>(null);
+  const [stageVisible, setStageVisible] = useState(false);
+  const [stageMode, setStageMode] = useState<'greeting' | 'strike' | null>(null);
 
   const reduced = useReducedMotion();
+  const reducedRef = useRef(reduced);
+  useEffect(() => {
+    reducedRef.current = reduced;
+  }, [reduced]);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const phaseRef = useRef<PanelPhase>('closed');
   const openingRef = useRef(false);
   const timers = useRef(new Set<ReturnType<typeof setTimeout>>());
   const characterTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stageModeRef = useRef<'greeting' | 'strike' | null>(null);
 
   const updatePhase = useCallback((next: PanelPhase) => {
     phaseRef.current = next;
@@ -74,7 +109,35 @@ const ChatBot = () => {
     }
   }, []);
 
-  const dismissGreeting = useCallback(() => setGreetingVisible(false), []);
+  const fireImpact = useCallback(
+    (target: 'stage' | 'trigger') => {
+      const key = Date.now();
+      setImpact({ key, target });
+      schedule(() => setImpact((current) => (current?.key === key ? null : current)), IMPACT_DURATION);
+    },
+    [schedule],
+  );
+
+  const showStage = useCallback((mode: 'greeting' | 'strike', pose: BodyPose) => {
+    stageModeRef.current = mode;
+    setStageMode(mode);
+    setStagePose(pose);
+    setStageVisible(true);
+  }, []);
+
+  const hideStage = useCallback(() => {
+    stageModeRef.current = null;
+    setStageVisible(false);
+    // Keep the mode (and its impact sparks) until the fade-out has finished.
+    schedule(() => {
+      if (stageModeRef.current === null) setStageMode(null);
+    }, STAGE_FADE_MS);
+  }, [schedule]);
+
+  const dismissGreeting = useCallback(() => {
+    setGreetingVisible(false);
+    if (stageModeRef.current === 'greeting') hideStage();
+  }, [hideStage]);
 
   useEffect(() => {
     const pending = timers.current;
@@ -85,9 +148,13 @@ const ChatBot = () => {
     };
   }, []);
 
-  // Mount the (hidden) panel once the browser is idle so the first open never waits on the chunk.
+  // Mount the (hidden) panel and warm the pose sprites once the browser is idle, so the first
+  // open and every pose swap are instant.
   useEffect(() => {
-    const mount = () => setPanelMounted(true);
+    const mount = () => {
+      setPanelMounted(true);
+      preloadBuilderSprites(hasStageRoom());
+    };
     if (typeof window.requestIdleCallback === 'function') {
       const handle = window.requestIdleCallback(mount, { timeout: 4000 });
       return () => window.cancelIdleCallback(handle);
@@ -108,11 +175,19 @@ const ChatBot = () => {
         if (phaseRef.current !== 'closed') return;
         safeSessionStorage.setItem(GREETED_KEY, '1');
         setCharacterFor('noticed');
+        const withStage = !reducedRef.current && hasStageRoom();
+        if (withStage) showStage('greeting', 'surprised');
         schedule(() => {
           if (phaseRef.current !== 'closed') return;
           setGreetingVisible(true);
           setCharacterFor('greeting', 1500, 'idle');
-          schedule(() => setGreetingVisible(false), GREETING_AUTO_HIDE);
+          if (withStage) {
+            setStagePose('wave');
+            schedule(() => {
+              if (stageModeRef.current === 'greeting') setStagePose('idle');
+            }, 1500);
+          }
+          schedule(dismissGreeting, GREETING_AUTO_HIDE);
         }, 650);
       }, GREETING_DELAY);
     };
@@ -123,7 +198,7 @@ const ChatBot = () => {
     }
     window.addEventListener('preloaderComplete', start, { once: true });
     return () => window.removeEventListener('preloaderComplete', start);
-  }, [schedule, setCharacterFor]);
+  }, [schedule, setCharacterFor, showStage, dismissGreeting]);
 
   const open = useCallback(() => {
     if (phaseRef.current === 'open' || openingRef.current) return;
@@ -132,6 +207,7 @@ const ChatBot = () => {
     setPanelMounted(true);
 
     if (reduced || phaseRef.current === 'closing') {
+      hideStage();
       updatePhase('open');
       setCharacterFor('ready');
       return;
@@ -139,12 +215,30 @@ const ChatBot = () => {
 
     openingRef.current = true;
     setCharacterFor('opening', SETTLE_AT);
-    schedule(() => setImpactKey((key) => key + 1), IMPACT_AT);
+
+    if (hasStageRoom()) {
+      showStage('strike', 'hammer-raise');
+      schedule(() => {
+        setStagePose('hammer-strike');
+        fireImpact('stage');
+      }, STRIKE_AT);
+      schedule(() => {
+        openingRef.current = false;
+        updatePhase('open');
+      }, STAGE_PANEL_AT);
+      schedule(() => {
+        if (stageModeRef.current === 'strike') hideStage();
+      }, STAGE_HIDE_AT);
+      return;
+    }
+
+    hideStage();
+    schedule(() => fireImpact('trigger'), IMPACT_AT);
     schedule(() => {
       openingRef.current = false;
       updatePhase('open');
     }, PANEL_AT);
-  }, [reduced, schedule, setCharacterFor, updatePhase]);
+  }, [reduced, schedule, setCharacterFor, updatePhase, showStage, hideStage, fireImpact]);
 
   const close = useCallback(() => {
     if (phaseRef.current !== 'open') return;
@@ -181,11 +275,11 @@ const ChatBot = () => {
   useEffect(() => {
     if (!greetingVisible) return;
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setGreetingVisible(false);
+      if (event.key === 'Escape') dismissGreeting();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [greetingVisible]);
+  }, [greetingVisible, dismissGreeting]);
 
   const isOpen = phase !== 'closed';
 
@@ -193,7 +287,18 @@ const ChatBot = () => {
     <div className={`builder-assistant${reduced ? ' ba-reduced' : ''}`}>
       {panelMounted && <BuilderChatPanel phase={phase} onClose={close} onActivity={handleActivity} />}
 
-      <div className="ba-dock">
+      <div className={`ba-dock${stageVisible ? ' ba-dock--stage' : ''}`}>
+        <div
+          className={`ba-stage${stageVisible ? ' is-visible' : ''}`}
+          data-pose={stagePose ?? undefined}
+          data-mode={stageMode ?? undefined}
+          aria-hidden="true"
+          onClick={stageMode === 'greeting' ? open : undefined}
+        >
+          {stagePose && <BuilderFigure pose={stagePose} />}
+          {impact?.target === 'stage' && <Impact key={impact.key} />}
+        </div>
+
         {greetingVisible && !isOpen && (
           <div className="ba-greeting" role="status">
             <button type="button" className="ba-greeting-body" onClick={open} onPointerEnter={prefetchPanel}>
@@ -218,21 +323,20 @@ const ChatBot = () => {
           type="button"
           className="ba-trigger"
           onClick={handleTriggerClick}
-          onPointerEnter={prefetchPanel}
+          onPointerEnter={(event) => {
+            prefetchPanel();
+            if (event.pointerType === 'mouse') setHovered(true);
+          }}
+          onPointerLeave={() => setHovered(false)}
           onFocus={prefetchPanel}
           aria-expanded={phase === 'open'}
           aria-controls="builder-chat-panel"
           aria-label={phase === 'open' ? 'Close the Builder chat' : 'Talk to the Builder — open chat assistant'}
         >
-          <Builder state={character} className="ba-character" />
-          {impactKey > 0 && !reduced && (
-            <span key={impactKey} className="ba-impact" aria-hidden="true">
-              <span className="ba-impact-ring" />
-              {[0, 1, 2, 3, 4, 5].map((i) => (
-                <span key={i} className="ba-impact-spark" style={{ '--i': i } as React.CSSProperties} />
-              ))}
-            </span>
-          )}
+          <span className="ba-character">
+            <BuilderPortrait state={character} hovered={hovered && !isOpen} animate={!reduced} />
+          </span>
+          {impact?.target === 'trigger' && <Impact key={impact.key} />}
         </button>
       </div>
     </div>
