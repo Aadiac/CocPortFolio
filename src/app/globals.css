@@ -5,7 +5,7 @@
   --font-marquee: var(--font-bungee), var(--font-supercell), sans-serif;
   --font-sans: var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
-  --font-serif: var(--font-instrument-serif), Georgia, serif;
+  --font-serif: var(--font-lilita), Georgia, serif;
 
   --text-hero: clamp(4.25rem, 18vw, 12rem);
   --text-hero-sm: clamp(3.6rem, 15.5vw, 9.5rem);
@@ -287,10 +287,15 @@ body.cursor-disabled * {
 }
 
 .serif-accent {
-  font-family: var(--font-instrument-serif), Georgia, serif;
-  font-style: italic;
+  font-family: var(--font-lilita), Georgia, serif;
+  font-style: normal;
   font-weight: 400;
   letter-spacing: -0.01em;
+}
+
+/* Clash of Clans display font: keep multi-line titles from colliding. */
+.font-display {
+  line-height: 1.25;
 }
 
 .text-outline {
@@ -398,6 +403,45 @@ body.cursor-disabled * {
   background-image: linear-gradient(180deg, #fffaf0, #f1dfb1);
   color: #2b1d12;
   box-shadow: 0 3px 0 #4a2c14;
+}
+
+/* Collector auras for tech stack cards */
+.chip-parchment.aura-gold,
+.chip-parchment.aura-elixir {
+  will-change: transform;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, filter 0.2s ease;
+}
+
+.chip-parchment.aura-gold:hover {
+  transform: translateY(-3px) scale(1.02);
+  border-color: #f7b731;
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.25),
+    0 0 16px rgba(247, 183, 49, 0.65),
+    inset 0 0 8px rgba(255, 235, 150, 0.5);
+  filter: brightness(1.05);
+}
+
+.chip-parchment.aura-gold:hover img,
+.chip-parchment.aura-gold:hover svg {
+  transform: scale(1.12);
+  transition: transform 0.2s ease;
+}
+
+.chip-parchment.aura-elixir:hover {
+  transform: translateY(-3px) scale(1.02);
+  border-color: #ff2a85;
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.25),
+    0 0 18px rgba(255, 42, 133, 0.7),
+    inset 0 0 8px rgba(255, 140, 200, 0.4);
+  filter: brightness(1.05);
+}
+
+.chip-parchment.aura-elixir:hover img,
+.chip-parchment.aura-elixir:hover svg {
+  transform: scale(1.12);
+  transition: transform 0.2s ease;
 }
 
 /* Achievement card (project rows) */

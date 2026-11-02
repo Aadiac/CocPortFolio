@@ -1,7 +1,7 @@
 import { getAllProjects } from '@/lib/projects';
 import { site, socials } from '@/lib/site';
 import { STACK_SECTIONS } from '@/components/sections/TechStack';
-import { CREDENTIALS } from '@/components/sections/AboutMe';
+import { MILESTONES } from '@/lib/milestones';
 
 /**
  * Deterministic, portfolio-aware replies for the Builder assistant.
@@ -123,12 +123,12 @@ export function getProjectSummaries(): ProjectSummary[] {
 }
 
 export function getExperienceItems(): ExperienceItem[] {
-  return CREDENTIALS.filter((item) => !isPlaceholderText(item.title)).map((item) => ({
+  return MILESTONES.filter((item) => !isPlaceholderText(item.title)).map((item) => ({
     year: item.year,
     title: item.title,
     organization: isPlaceholderText(item.organization) ? '' : item.organization,
     type: item.type,
-    detail: 'stat' in item && item.stat && !isPlaceholderText(item.stat) ? item.stat : undefined,
+    detail: item.description && !isPlaceholderText(item.description) ? item.description : undefined,
   }));
 }
 

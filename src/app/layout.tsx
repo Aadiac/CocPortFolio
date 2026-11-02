@@ -7,7 +7,7 @@
  * Website: https://your-domain.com
  */
 
-import { Geist, Geist_Mono, Space_Grotesk, Instrument_Serif, Bungee } from 'next/font/google';
+import { Geist, Geist_Mono, Space_Grotesk, Lilita_One, Bungee } from 'next/font/google';
 import localFont from 'next/font/local';
 import './globals.css';
 import ClientLayout from './ClientLayout';
@@ -33,11 +33,10 @@ const spaceGrotesk = Space_Grotesk({
   preload: true,
   display: 'swap',
 });
-const instrumentSerif = Instrument_Serif({
-  variable: '--font-instrument-serif',
+const lilitaOne = Lilita_One({
+  variable: '--font-lilita',
   subsets: ['latin'],
   weight: '400',
-  style: ['normal', 'italic'],
   preload: true,
   display: 'swap',
 });
@@ -60,7 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} ${instrumentSerif.variable} ${bungee.variable} ${supercellMagic.variable} antialiased bg-cream`}
+        className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} ${lilitaOne.variable} ${bungee.variable} ${supercellMagic.variable} antialiased bg-cream`}
       >
         <a href="#main-content" className="skip-link">
           Skip to content

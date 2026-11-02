@@ -43,6 +43,7 @@ export const STACK_SECTIONS: StackCategory[] = [
     technologies: [
       { name: 'Node.js', category: 'backend', icon: '/Services/node.png' },
       { name: 'Express.js', category: 'backend', icon: '/Services/express.png' },
+      { name: 'Go', category: 'backend', icon: '/Services/go.svg' },
       { name: 'Socket.io', category: 'backend', icon: '/Services/socketio.svg' },
       { name: 'Firebase', category: 'backend', icon: '/Services/firebase.svg' },
     ],
@@ -161,37 +162,11 @@ const TechStack = () => {
     { scope: containerRef, dependencies: [activeFilter] },
   );
 
-  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (
-      typeof window !== 'undefined' &&
-      (window.matchMedia('(pointer: coarse)').matches ||
-        !window.matchMedia('(hover: hover)').matches)
-    ) {
-      return;
-    }
-    const img = e.currentTarget.querySelector('img');
-    if (!img) return;
-    gsap.to(img, { rotation: 360, scale: 1.1, duration: 0.6, ease: 'power2.out' });
-  };
-
-  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (
-      typeof window !== 'undefined' &&
-      (window.matchMedia('(pointer: coarse)').matches ||
-        !window.matchMedia('(hover: hover)').matches)
-    ) {
-      return;
-    }
-    const img = e.currentTarget.querySelector('img');
-    if (!img) return;
-    gsap.to(img, { rotation: 0, scale: 1, duration: 0.5, ease: 'power2.inOut' });
-  };
-
   return (
     <section
       ref={containerRef}
       id="tech-stack"
-      className="bg-ink texture-wood text-light pt-24 pb-16 md:pt-32 md:pb-20 rounded-b-4xl overflow-hidden"
+      className="bg-ink texture-wood text-light pt-24 pb-16 md:pt-32 md:pb-20 rounded-b-4xl overflow-visible"
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16">
         <div className="mb-10 md:mb-14 hidden md:block">
@@ -247,9 +222,16 @@ const TechStack = () => {
                   ref={(el) => {
                     titleRefs.current[index] = el;
                   }}
-                  className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-accent-light tracking-tight font-display uppercase"
+                  className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-accent-light tracking-tight font-display uppercase flex flex-col gap-2"
                 >
-                  {stack.title}
+                  {stack.title.includes(' & ') ? (
+                    <>
+                      <span>{stack.title.split(' & ')[0]} &</span>
+                      <span>{stack.title.split(' & ')[1]}</span>
+                    </>
+                  ) : (
+                    stack.title
+                  )}
                 </h3>
                 <span className="font-mono text-xs text-warm-light tracking-widest uppercase block mt-2">
                   {stack.technologies.length} Technologies
@@ -258,24 +240,21 @@ const TechStack = () => {
 
               <div className="md:w-2/3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {stack.technologies.map((tech, i) => (
-                  <div
-                    key={i}
-                    className="tech-item chip-parchment flex items-center gap-3 p-3 cursor-pointer transition-[filter] duration-300 hover:brightness-105"
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    <div className="w-10 h-10 flex items-center justify-center relative flex-shrink-0">
-                      <Image
-                        src={tech.icon}
-                        alt={tech.name}
-                        width={40}
-                        height={40}
-                        className="w-full h-full object-contain"
-                      />
+                  <div key={i} className="tech-item">
+                    <div className={`chip-parchment flex items-center gap-3 p-3 cursor-pointer ${i % 2 === 0 ? 'aura-gold' : 'aura-elixir'}`}>
+                      <div className="w-10 h-10 flex items-center justify-center relative flex-shrink-0">
+                        <Image
+                          src={tech.icon}
+                          alt={tech.name}
+                          width={40}
+                          height={40}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                      <p className="text-xs sm:text-sm font-mono font-bold text-charcoal break-words">
+                        {tech.name}
+                      </p>
                     </div>
-                    <p className="text-xs sm:text-sm font-mono font-bold text-charcoal break-words">
-                      {tech.name}
-                    </p>
                   </div>
                 ))}
               </div>

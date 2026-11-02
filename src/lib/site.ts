@@ -14,8 +14,8 @@ export const site = {
   tagline: 'Full stack developer crafting fast, expressive web experiences.',
   roles: [
     'Full Stack Developer',
-    'React & Next.js Engineer',
-    'MERN Stack Developer',
+    'Go lang developer',
+    'Backend Developer',
     'Open to Work Worldwide',
   ],
 } as const;

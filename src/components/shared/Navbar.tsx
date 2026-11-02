@@ -375,7 +375,7 @@ const FullscreenMenu: React.FC<FullscreenMenuProps> = ({ isOpen, onClose, handle
               <div
                 key={link.href}
                 ref={(el) => { linkRowRefs.current[i] = el; }}
-                className="overflow-hidden py-[0.18em]"
+                className="py-2"
               >
                 <div
                   ref={(el) => { magnetRefs.current[i] = el; }}
@@ -390,7 +390,7 @@ const FullscreenMenu: React.FC<FullscreenMenuProps> = ({ isOpen, onClose, handle
                     <span className="text-gray-mid font-mono text-xs md:text-sm transition-colors duration-300 group-hover:text-accent">
                       {String(i + 1).padStart(2, '0')}
                     </span>
-                    <span className="font-display text-[2.8rem] sm:text-[3.4rem] md:text-[3.8rem] lg:text-[4.4rem] xl:text-[4.8rem] font-black uppercase leading-none tracking-tight text-cream group-hover:text-accent transition-colors duration-300 flex">
+                    <span className="font-display text-[clamp(2rem,3.6vw,3.2rem)] font-black uppercase leading-none tracking-tight text-cream group-hover:text-accent transition-colors duration-300 flex">
                       {link.name}
                     </span>
                     <span className="text-accent text-2xl md:text-3xl lg:text-4xl opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0">

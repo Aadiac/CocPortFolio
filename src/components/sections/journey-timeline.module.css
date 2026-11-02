@@ -1,0 +1,547 @@
+/* ==========================================================================
+   JourneyTimeline
+   A vertical milestone rail with a scroll-driven hammer.
+
+   The hammer sprite is a 4 x 2 sheet (8 angles). Each angle is rendered as
+   its own layer and cross-faded, so the hammer can "swing" through the poses
+   without a hard jump. Swap the config in JourneyTimeline.tsx if your sheet
+   has a different grid.
+   ========================================================================== */
+
+.timeline {
+  --rail-x: 22px;
+  --hammer-size: clamp(82px, 13vw, 104px);
+  --gold: #f2b632;
+  --gold-light: #ffd66b;
+  --gold-dark: #b97f0f;
+  --dot-size: 18px;
+  position: relative;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .timeline {
+    --rail-x: 50%;
+    --hammer-size: clamp(150px, 15vw, 205px);
+    --dot-size: 20px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Rail
+   -------------------------------------------------------------------------- */
+
+.rail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--rail-x);
+  width: 2px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(244, 233, 208, 0.24) 0 5px,
+    transparent 5px 11px
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 2.5%,
+    #000 97.5%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 2.5%,
+    #000 97.5%,
+    transparent
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.railProgress {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: linear-gradient(
+    to bottom,
+    var(--gold-light),
+    var(--gold) 18%,
+    rgba(242, 182, 50, 0.18)
+  );
+  box-shadow: 0 0 14px rgba(242, 182, 50, 0.55);
+  transform: scaleY(0);
+  transform-origin: 50% 0%;
+  will-change: transform;
+}
+
+/* --------------------------------------------------------------------------
+   Hammer
+   -------------------------------------------------------------------------- */
+
+.hammer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+  z-index: 10;
+}
+
+/* Static placement: moves the sprite's anchor point onto the trigger node. */
+.hammerPlacement {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--hammer-size);
+  transform: translate(-50%, -76%);
+}
+
+/* Rotors. Two nested layers so travel tilt and strike swing never fight. */
+.hammerTilt,
+.hammerSwing {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 76%;
+  will-change: transform;
+}
+
+.sprite {
+  position: absolute;
+  inset: 0;
+  filter: drop-shadow(0 14px 16px rgba(0, 0, 0, 0.42))
+    drop-shadow(0 0 14px rgba(242, 182, 50, 0.1));
+}
+
+/* One layer per angle frame. Only two are visible during a cross-fade. */
+.spriteLayer {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 150ms ease;
+  will-change: opacity;
+}
+
+/* --------------------------------------------------------------------------
+   Milestone rows
+   -------------------------------------------------------------------------- */
+
+.list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4.25rem;
+  padding-bottom: 1rem;
+  z-index: 20;
+}
+
+@media (min-width: 768px) {
+  .list {
+    gap: 6.5rem;
+  }
+}
+
+.row {
+  position: relative;
+}
+
+/* The node column is always centered on the rail. */
+.node {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 22px;
+  z-index: 30;
+}
+
+.connector {
+  position: absolute;
+  top: 50%;
+  height: 1px;
+  opacity: 0.35;
+  pointer-events: none;
+  transition: opacity 300ms ease, background-color 300ms ease;
+}
+
+.connectorLeft {
+  right: 50%;
+  left: 0;
+  background-image: linear-gradient(
+    to left,
+    rgba(244, 233, 208, 0.38),
+    transparent
+  );
+  transform-origin: 100% 50%;
+}
+
+.connectorRight {
+  left: 50%;
+  right: 0;
+  background-image: linear-gradient(
+    to right,
+    rgba(244, 233, 208, 0.38),
+    transparent
+  );
+  transform-origin: 0% 50%;
+}
+
+@media (max-width: 767px) {
+  .connector {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Target dot + impact spark
+   -------------------------------------------------------------------------- */
+
+.dot {
+  position: relative;
+  display: block;
+  width: var(--dot-size);
+  height: var(--dot-size);
+  border: 2px solid rgba(244, 233, 208, 0.45);
+  border-radius: 50%;
+  background-color: #170f08;
+  box-shadow: 0 0 0 4px rgba(23, 15, 8, 0.85);
+  transition: border-color 300ms ease, background-color 300ms ease,
+    box-shadow 300ms ease;
+  z-index: 2;
+}
+
+.dotCore {
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background-color: rgba(244, 233, 208, 0.18);
+  transition: background-color 300ms ease;
+}
+
+.dotHalo {
+  position: absolute;
+  inset: -9px;
+  border: 1px solid rgba(242, 182, 50, 0);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.row[data-current='true'] .dotHalo {
+  border-color: rgba(242, 182, 50, 0.5);
+  animation: journey-halo 2.6s ease-out infinite;
+}
+
+@keyframes journey-halo {
+  0% {
+    transform: scale(0.65);
+    opacity: 0.8;
+  }
+  70%,
+  100% {
+    transform: scale(1.65);
+    opacity: 0;
+  }
+}
+
+.row.isActive .dot {
+  border-color: var(--gold-light);
+  background-color: var(--gold);
+  box-shadow: 0 0 0 5px rgba(242, 182, 50, 0.13),
+    0 0 24px rgba(242, 182, 50, 0.6);
+}
+
+.row.isActive .dotCore {
+  background-color: #2b1d12;
+}
+
+.row.isActive .connector {
+  opacity: 0.95;
+}
+
+.spark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 40;
+}
+
+.sparkRing,
+.sparkFlash {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sparkRing {
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  border: 2px solid var(--gold-light);
+  box-shadow: 0 0 16px rgba(255, 214, 107, 0.65),
+    inset 0 0 10px rgba(255, 214, 107, 0.35);
+}
+
+.sparkFlash {
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  background-image: radial-gradient(
+    circle,
+    rgba(255, 214, 107, 0.7),
+    rgba(242, 182, 50, 0.22) 45%,
+    transparent 70%
+  );
+}
+
+.rayWrap {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  transform: rotate(var(--angle, 0deg));
+}
+
+.ray {
+  position: absolute;
+  bottom: 9px;
+  left: -1px;
+  width: 2px;
+  height: 22px;
+  border-radius: 999px;
+  background-image: linear-gradient(
+    to top,
+    var(--gold-light),
+    rgba(255, 214, 107, 0)
+  );
+  opacity: 0;
+  transform-origin: 50% 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Cards
+   -------------------------------------------------------------------------- */
+
+.card {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  overflow: hidden;
+  border: 1px solid rgba(244, 233, 208, 0.14);
+  border-radius: 18px;
+  padding: 22px 24px;
+  background-image: linear-gradient(
+    180deg,
+    rgba(46, 32, 19, 0.92),
+    rgba(33, 22, 13, 0.97)
+  );
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: border-color 350ms ease, box-shadow 350ms ease,
+    background-color 350ms ease;
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: 26px 30px;
+  }
+}
+
+.row[data-side='left'] .card {
+  margin-left: auto;
+}
+
+.row[data-side='right'] .card {
+  margin-right: auto;
+}
+
+/* Gold seam on the side that faces the rail. */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 18px;
+  bottom: 18px;
+  width: 2px;
+  border-radius: 2px;
+  background-image: linear-gradient(
+    to bottom,
+    transparent,
+    var(--gold),
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 350ms ease;
+}
+
+.row[data-side='left'] .card::before {
+  right: -1px;
+}
+
+.row[data-side='right'] .card::before {
+  left: -1px;
+}
+
+.row.isActive .card {
+  border-color: rgba(242, 182, 50, 0.5);
+  background-image: linear-gradient(
+    180deg,
+    rgba(53, 37, 22, 0.96),
+    rgba(36, 24, 14, 0.99)
+  );
+  box-shadow: 0 20px 42px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(242, 182, 50, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.row.isActive .card::before {
+  opacity: 1;
+}
+
+.cardTop {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .row[data-side='left'] .cardTop {
+    flex-direction: row-reverse;
+  }
+  .row[data-side='left'] .card {
+    text-align: right;
+  }
+}
+
+.type {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border: 1px solid rgba(242, 182, 50, 0.35);
+  border-radius: 999px;
+  background-color: rgba(242, 182, 50, 0.08);
+  color: var(--gold-light);
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.year {
+  color: rgba(244, 233, 208, 0.55);
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.title {
+  position: relative;
+  margin-top: 16px;
+  color: #f4e9d0;
+  font-family: var(--font-supercell), sans-serif;
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+.org {
+  position: relative;
+  margin-top: 10px;
+  color: var(--gold-light);
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  z-index: 1;
+}
+
+.detail {
+  position: relative;
+  margin-top: 12px;
+  color: #b5a288;
+  font-family: var(--font-sans), sans-serif;
+  font-size: 13px;
+  line-height: 1.65;
+  z-index: 1;
+}
+
+.tags {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 16px;
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .row[data-side='left'] .tags {
+    justify-content: flex-end;
+  }
+}
+
+.tag {
+  padding: 3px 8px;
+  border: 1px solid rgba(244, 233, 208, 0.12);
+  border-radius: 6px;
+  color: rgba(244, 233, 208, 0.62);
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cardIndex {
+  position: absolute;
+  top: 8px;
+  right: 14px;
+  color: rgba(244, 233, 208, 0.055);
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(2.8rem, 5vw, 4.2rem);
+  font-weight: 900;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.row[data-side='left'] .cardIndex {
+  right: auto;
+  left: 14px;
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .spriteLayer {
+    transition-duration: 0.01ms;
+  }
+  .row[data-current='true'] .dotHalo {
+    animation: none;
+  }
+}
