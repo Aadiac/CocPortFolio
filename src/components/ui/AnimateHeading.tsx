@@ -61,7 +61,7 @@ const AnimatedHeading: React.FC<AnimatedHeadingProps> = ({
       const line = root.querySelector<HTMLElement>('.ah-line');
 
       const tl = gsap.timeline({
-        scrollTrigger: { trigger: root, start: 'top 90%', once: true },
+        scrollTrigger: { trigger: root, start: 'top 90%', toggleActions: 'play none none none' },
         defaults: { ease: EASE.outQuart },
       });
 

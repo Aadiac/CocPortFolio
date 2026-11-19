@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import { gsap, useGSAP } from '@/lib/gsap';
 import ScrollWordReveal from '@/components/ui/ScrollWordReveal';
 import AnimatedHeading from '@/components/ui/AnimateHeading';
+import CodeTyper from '@/components/ui/CodeTyper';
 import FlowField from '@/components/canvas/FlowField';
 import JourneyTimeline from '@/components/sections/JourneyTimeline';
 
@@ -14,44 +15,35 @@ const About = () => {
     { t: 'i?' },
   ];
   const descriptionText =
-    'I build clean, fast interfaces and the systems that power them.';
-  const aboutMeText = `I'm a developer focused on turning ideas into reliable, well-crafted web products. I care about the details that make software feel effortless: smooth interactions, sensible architecture, and interfaces that stay out of the way.\n\nI work across the stack, from React and Next.js on the frontend to APIs, databases, and deployment on the backend. Most of what I know came from building things, breaking them, and rebuilding them better.\n\nWhether I'm polishing a micro-interaction or designing a data model, the goal is the same: software that solves a real problem and feels good to use.`;
+    'I design distributed backend architectures with Go and C++, backed by clean full-stack execution.';
+  const aboutMeText = `I am a Backend Engineer with 3 years of experience building high-performance distributed systems, low-latency microservices, and concurrent applications using Go, C++, and Linux.
+
+My experience spans developing carrier-grade 5G PCF modules for live telecom networks to architecting real-time platforms using Node.js and WebSockets. I also work with AI technologies, including LLM integration, RAG pipelines, vector databases, and semantic search to build intelligent applications.
+
+I focus on concurrency, memory efficiency, system performance, and designing scalable, reliable software.`;
 
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
-      gsap.fromTo(
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 85%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+
+      tl.fromTo(
         '.about-image-wrapper',
         { x: -60, opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          duration: 1.2,
-          ease: 'power3.out',
-          force3D: true,
-          scrollTrigger: {
-            trigger: '.about-image-wrapper',
-            start: 'top 85%',
-            toggleActions: 'play none none reverse',
-          },
-        },
+        { x: 0, opacity: 1, duration: 1.2, ease: 'power3.out', force3D: true },
       );
 
-      gsap.fromTo(
+      tl.fromTo(
         '.about-label',
         { opacity: 0, letterSpacing: '0.45em' },
-        {
-          opacity: 1,
-          letterSpacing: '0.3em',
-          duration: 1,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: '.about-label',
-            start: 'top 88%',
-            toggleActions: 'play none none reverse',
-          },
-        },
+        { opacity: 1, letterSpacing: '0.3em', duration: 1, ease: 'power3.out' },
       );
     },
     { scope: sectionRef },
@@ -81,6 +73,7 @@ const About = () => {
             <div className="col-span-12 md:col-span-5 lg:col-span-5 flex items-center justify-center">
               <div className="about-image-wrapper relative group w-full max-w-[350px] md:max-w-[380px] h-[360px] md:h-[480px] bg-elevated-dark rounded-2xl overflow-hidden border border-border-subtler shadow-2xl">
                 <FlowField />
+                <CodeTyper />
               </div>
             </div>
 

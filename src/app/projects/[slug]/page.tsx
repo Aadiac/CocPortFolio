@@ -14,27 +14,31 @@ export async function generateMetadata({ params }: PageProps) {
       title: 'Project Not Found',
     };
   }
+  // Projects without screenshots fall back to the site-wide share image.
+  const shareImage = project.hoverImage || project.images[0];
   return {
     title: project.title,
     description: project.description,
     openGraph: {
       title: `${project.title} - ${site.name}`,
       description: project.description,
-      images: [
-        {
-          url: project.hoverImage || project.images[0],
-          width: 1200,
-          height: 630,
-          alt: project.title,
-        },
-      ],
+      ...(shareImage && {
+        images: [
+          {
+            url: shareImage,
+            width: 1200,
+            height: 630,
+            alt: project.title,
+          },
+        ],
+      }),
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
       title: `${project.title} - ${site.name}`,
       description: project.description,
-      images: [project.hoverImage || project.images[0]],
+      ...(shareImage && { images: [shareImage] }),
     },
   };
 }

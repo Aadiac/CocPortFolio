@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { gsap, ScrollTrigger } from '@/lib/gsap';
+import { useRef } from 'react';
+import { ScrollTrigger, useGSAP } from '@/lib/gsap';
 import AnimatedHeading from '@/components/ui/AnimateHeading';
 import ScrollWordReveal from '@/components/ui/ScrollWordReveal';
 
@@ -9,9 +9,9 @@ const Services = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<(HTMLDivElement | null)[]>([]);
 
-  useEffect(() => {
-    if (window.innerWidth < 768) return;
-    const ctx = gsap.context(() => {
+  useGSAP(
+    () => {
+      if (window.innerWidth < 768) return;
       const allSections = servicesRef.current.filter(Boolean);
       const pinOffset = 50;
       allSections.forEach((section, index) => {
@@ -24,9 +24,9 @@ const Services = () => {
           pinSpacing: false,
         });
       });
-    }, sectionRef);
-    return () => ctx.revert();
-  }, []);
+    },
+    { scope: sectionRef },
+  );
 
   const headingWords = [
     { t: 'WHAT' },
@@ -34,40 +34,41 @@ const Services = () => {
     { t: 'DO' },
   ];
   const descriptionText =
-    "I specialize in building full-stack web applications that are fast, reliable, and user-friendly. With a solid foundation in both frontend and backend technologies, I help bring ideas to life whether it's for a business, a startup, or a product team.";
-
+    "I engineer scalable backend systems, high-performance microservices, and real-time applications using Go, C++, Node.js, and Linux. From building carrier-grade 5G telecom systems to developing AI-powered applications with LLMs and RAG, I focus on concurrency, system performance, and building reliable, intelligent software."
   const services = [
     {
       id: '01',
       title: 'Full Stack Development',
       description:
-        'End-to-end development of modern web applications, covering everything from frontend interfaces to backend APIs. I build complete, maintainable, and scalable systems using the MERN stack and modern tooling.',
+        'Building end-to-end web and mobile applications, from responsive frontend interfaces to scalable backend services and APIs. I develop maintainable, high-performance applications using modern JavaScript frameworks and backend technologies.',
       items: [
-        'MERN Stack (MongoDB, Express.js, React, Node.js)',
-        'REST APIs & Integration',
+        'React.js & React Native (PostgreSQL, Express.js, React, Node.js)',
+        'Go, Node.js ,REST APIs & Integration',
+        'Database Design & Integration',
         'Authentication & Authorization',
       ],
     },
     {
       id: '02',
-      title: 'Frontend Development',
+      title: 'Backend Development',
       description:
-        'Crafting responsive, accessible, and elegant interfaces that deliver exceptional user experiences. I focus on clarity, performance, and seamless interaction across devices.',
+        'Designing and developing high-performance backend systems, scalable microservices, and reliable APIs. I focus on distributed architectures, concurrent processing, and low-latency systems using Go, C++, Node.js, and Linux.',
       items: [
-        'React, Next.js, TailwindCSS, GSAP',
-        'Optimized Rendering & Animations',
-        'Figma to Code Implementation',
+        'Go, C++ & Node.js',
+        'Microservices & Distributed Systems',
+        'Concurrency & Performance Optimization',
+        'REST APIs & Database Management'
       ],
     },
     {
       id: '03',
-      title: 'Optimization & Performance',
+      title: 'Frontend Development',
       description:
-        'Optimizing codebases, APIs, and assets for speed, scalability, and maintainability. I ensure your applications run efficiently with best practices in caching, SEO, and deployment.',
+        'Building responsive, interactive, and user-friendly web interfaces with a focus on clean design, performance, and seamless user experiences. I create modern web and mobile interfaces using React, React Native, and modern frontend technologies.',
       items: [
-        'Performance Tuning & Code Refactoring',
-        'SEO & Accessibility Optimization',
-        'Deployment (Vercel, AWS, Docker)',
+        ' React.js & React Native',
+        'Responsive UI & Component Architecture',
+        'State Management & API Integration',
       ],
     },
   ];

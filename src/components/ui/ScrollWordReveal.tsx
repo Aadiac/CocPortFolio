@@ -59,8 +59,8 @@ export const ScrollWordReveal: React.FC<ScrollWordRevealProps> = ({
   const tokens = React.useMemo(() => tokenize(text), [text]);
 
   useGSAP(
-    () => {
-      if (reduced) return;
+    (_ctx, contextSafe) => {
+      if (reduced || !contextSafe) return;
       const el = containerRef.current;
       if (!el) return;
       const wordEls = el.querySelectorAll<HTMLSpanElement>('.swr-word');
@@ -81,21 +81,30 @@ export const ScrollWordReveal: React.FC<ScrollWordRevealProps> = ({
             : dimColor,
       });
 
-      gsap.to(wordEls, {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        color: (i: number, target: Element) =>
-          (target as HTMLElement).dataset.accent === 'true' ? accentColor : highlightColor,
-        ease: 'none',
-        stagger: 0.05,
-        scrollTrigger: {
-          trigger: el,
-          start: stStart,
-          end: stEnd,
-          scrub: true,
-        },
+      // Create the scroll-linked tween on the next frame, not during React's
+      // commit. Creating it synchronously can land in the middle of another
+      // ScrollTrigger refresh (pinned sections, HMR) and crash with
+      // "Cannot read properties of undefined (reading 'end')".
+      const createReveal = contextSafe(() => {
+        if (!el.isConnected) return;
+        gsap.to(wordEls, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          color: (i: number, target: Element) =>
+            (target as HTMLElement).dataset.accent === 'true' ? accentColor : highlightColor,
+          ease: 'none',
+          stagger: 0.05,
+          scrollTrigger: {
+            trigger: el,
+            start: stStart,
+            end: stEnd,
+            scrub: true,
+          },
+        });
       });
+      const rafId = requestAnimationFrame(createReveal);
+      return () => cancelAnimationFrame(rafId);
     },
     { scope: containerRef, dependencies: [reduced, text] }
   );

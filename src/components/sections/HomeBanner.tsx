@@ -47,7 +47,7 @@ const RoleTicker = () => {
     <div className="h-6 overflow-hidden mb-8 flex justify-center items-center select-none">
       <div
         ref={containerRef}
-        className="relative h-6 w-80 text-center font-marquee text-[13px] uppercase tracking-[0.05em] text-accent"
+        className="relative h-6 w-80 text-center font-marquee text-[13px] uppercase tracking-[0.05em] text-gold"
       >
         <div className="ticker-word-current absolute inset-0 flex items-center justify-center">
           {roles[currentIdx]}
@@ -218,7 +218,7 @@ const HomeBanner = () => {
   return (
     <section
       ref={sectionRef}
-      className="min-h-[100dvh] md:min-h-screen px-6 sm:px-8 md:px-12 lg:px-16 pt-28 pb-8 md:pt-32 md:pb-0 bg-cream texture-parchment flex items-center relative overflow-hidden"
+      className="min-h-[100dvh] md:min-h-screen px-6 sm:px-8 md:px-12 lg:px-16 pt-32 pb-8 md:pt-36 md:pb-0 bg-[#1E3A27] flex items-center relative overflow-hidden"
     >
       <AmbientGeometry />
 
@@ -238,20 +238,14 @@ const HomeBanner = () => {
           <h1
             ref={nameRef}
             aria-label={site.name}
-            className="select-none leading-none cursor-default mb-6 md:mb-4"
+            className="select-none leading-none cursor-default text-cream mb-6 md:mb-4"
           >
             <span aria-hidden="true" className="block">
               <span
                 data-hero-line
-                className="block font-display font-black uppercase text-hero tracking-tight"
+                className="block font-display font-black uppercase text-[clamp(2.5rem,11vw,9rem)] whitespace-nowrap tracking-tight"
               >
-                {site.firstName.toUpperCase()}
-              </span>
-              <span
-                data-hero-line
-                className="serif-accent block text-hero-sm leading-[0.85] md:ml-[14vw]"
-              >
-                {site.lastName}
+                {site.name.toUpperCase()}
               </span>
             </span>
           </h1>
@@ -261,9 +255,9 @@ const HomeBanner = () => {
           <div className="max-w-xl w-full text-center mx-auto">
             <p
               ref={paragraphRef}
-              className="text-warm font-sans text-base sm:text-lg md:text-xl leading-relaxed mb-8 md:mb-10 text-center mx-auto"
+              className="text-cream/80 font-sans text-base sm:text-lg md:text-xl leading-relaxed mb-8 md:mb-10 text-center mx-auto"
             >
-              Full-stack engineer building fast, scalable, and reliable web applications.
+              Full-stack Ai engineer building fast, scalable, and reliable web applications.
             </p>
 
             <div ref={tickerRef} className="w-full flex justify-center">

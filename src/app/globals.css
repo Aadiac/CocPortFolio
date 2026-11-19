@@ -467,6 +467,7 @@ body.cursor-disabled * {
   font-size: 0.72rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  white-space: nowrap;
   box-shadow: 0 3px 0 #b97f0f;
 }
 

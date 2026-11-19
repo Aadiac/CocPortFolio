@@ -8,10 +8,8 @@ import ScrollWordReveal from '@/components/ui/ScrollWordReveal';
 
 export interface TechItem {
   name: string;
-  category: 'frontend' | 'backend' | 'database' | 'devops' | 'tools';
-  icon: string;
-  level?: string;
-  description?: string;
+  /** Path under /public. Without one, the chip shows the name's initials. */
+  icon?: string;
 }
 
 export interface StackCategory {
@@ -27,62 +25,102 @@ export const STACK_SECTIONS: StackCategory[] = [
     id: 'frontend',
     title: 'FRONTEND',
     technologies: [
-      { name: 'JavaScript', category: 'frontend', icon: '/Services/js.png' },
-      { name: 'TypeScript', category: 'frontend', icon: '/Services/typescript.svg' },
-      { name: 'React', category: 'frontend', icon: '/Services/react.png' },
-      { name: 'Next.js', category: 'frontend', icon: '/Services/next.webp' },
-      { name: 'Redux Toolkit', category: 'frontend', icon: '/Services/reduxtoolkit.svg' },
-      { name: 'Tailwind CSS', category: 'frontend', icon: '/Services/tailwind.png' },
-      { name: 'Bootstrap', category: 'frontend', icon: '/Services/bootstrap.svg' },
-      { name: 'GSAP', category: 'frontend', icon: '/Services/gsap.png' },
+      { name: 'JavaScript', icon: '/Services/js.png' },
+      { name: 'TypeScript', icon: '/Services/typescript.svg' },
+      { name: 'React', icon: '/Services/react.png' },
+      { name: 'Tailwind CSS', icon: '/Services/tailwind.png' },
+      { name: 'Responsive Design' },
+      { name: 'Framer Motion', icon: '/Services/framermotion.svg' },
+      { name: 'Expo', icon: '/Services/expo.svg' },
+      { name: 'React Context API', icon: '/Services/react.png' },
+      { name: 'REST API Integration' },
+      { name: 'Axios', icon: '/Services/axios.svg' },
+      { name: 'WebSockets' },
     ],
   },
   {
     id: 'backend',
     title: 'BACKEND & REAL-TIME',
     technologies: [
-      { name: 'Node.js', category: 'backend', icon: '/Services/node.png' },
-      { name: 'Express.js', category: 'backend', icon: '/Services/express.png' },
-      { name: 'Go', category: 'backend', icon: '/Services/go.svg' },
-      { name: 'Socket.io', category: 'backend', icon: '/Services/socketio.svg' },
-      { name: 'Firebase', category: 'backend', icon: '/Services/firebase.svg' },
+      { name: 'Golang', icon: '/Services/go.svg' },
+      { name: 'C++', icon: '/Services/cplusplus.svg' },
+      { name: 'Node.js', icon: '/Services/node.png' },
+      { name: 'Python', icon: '/Services/python.svg' },
+      { name: 'Express.js', icon: '/Services/express.png' },
+      { name: 'Socket.io', icon: '/Services/socketio.svg' },
+      { name: 'Firebase', icon: '/Services/firebase.svg' },
+      { name: 'gRPC', icon: '/Services/grpc.svg' },
+      { name: 'Microservices' },
+      { name: 'Distributed Systems' },
+      { name: 'Auth (AuthN / AuthZ)' },
+      { name: 'Concurrency' },
     ],
   },
   {
     id: 'database',
     title: 'DATABASE & ORM',
     technologies: [
-      { name: 'MongoDB', category: 'database', icon: '/Services/mongodb.svg' },
-      { name: 'Mongoose', category: 'database', icon: '/Services/mongoose.svg' },
-      { name: 'MySQL', category: 'database', icon: '/Services/mysql.svg' },
+      { name: 'MongoDB', icon: '/Services/mongodb.svg' },
+      { name: 'PostgreSQL', icon: '/Services/postgresql.svg' },
+      { name: 'MySQL', icon: '/Services/mysql.svg' },
+      { name: 'Redis', icon: '/Services/redis.svg' },
+      { name: 'SQL' },
+    ],
+  },
+  {
+    id: 'realtime',
+    title: 'REAL-TIME & PROTOCOLS',
+    technologies: [
+      { name: 'WebSockets' },
+      { name: 'Socket.IO', icon: '/Services/socketio.svg' },
+      { name: 'HTTP/2' },
     ],
   },
   {
     id: 'devops',
     title: 'DEVOPS & CLOUD',
     technologies: [
-      { name: 'Docker', category: 'devops', icon: '/Services/docker.svg' },
-      { name: 'GitHub Actions', category: 'devops', icon: '/Services/githubactions.svg' },
-      { name: 'AWS', category: 'devops', icon: '/Services/aws.webp' },
-      { name: 'Nginx', category: 'devops', icon: '/Services/nginx.svg' },
-      { name: 'Linux', category: 'devops', icon: '/Services/linux.svg' },
+      { name: 'Docker', icon: '/Services/docker.svg' },
+      { name: 'GitHub Actions', icon: '/Services/githubactions.svg' },
+      { name: 'GitLab', icon: '/Services/gitlab.svg' },
+      { name: 'Linux', icon: '/Services/linux.svg' },
+      { name: 'Shell Scripting' },
+      { name: 'Networking' },
+      { name: 'tcpdump' },
+      { name: 'Wireshark' },
+      { name: 'CMake' },
+      { name: 'Make' },
     ],
   },
   {
     id: 'tools',
     title: 'AI, TESTING & TOOLS',
     technologies: [
-      { name: 'Gemini AI', category: 'tools', icon: '/Services/geminiai.svg' },
-      { name: 'Jest', category: 'tools', icon: '/Services/jest.svg' },
-      { name: 'Zod', category: 'tools', icon: '/Services/zod.svg' },
-      { name: 'Stripe', category: 'tools', icon: '/Services/stripe.svg' },
-      { name: 'Cloudinary', category: 'tools', icon: '/Services/cloudinary.svg' },
-      { name: 'Git', category: 'tools', icon: '/Services/git.png' },
-      { name: 'Postman', category: 'tools', icon: '/Services/postman-icon.svg' },
-      { name: 'Figma', category: 'tools', icon: '/Services/figma.png' },
+      { name: 'Gemini AI', icon: '/Services/geminiai.svg' },
+      { name: 'Git', icon: '/Services/git.png' },
+      { name: 'Postman', icon: '/Services/postman-icon.svg' },
+      { name: 'Claude AI', icon: '/Services/claude.svg' },
+      { name: 'Codex', icon: '/Services/openai.svg' },
+      { name: 'LLMs' },
+      { name: 'RAG' },
+      { name: 'Claude', icon: '/Services/claude.svg' },
+      { name: 'Prompt Engineering' },
+      { name: 'Vector Databases' },
+      { name: 'Semantic Search' },
+      { name: 'AI Agents' },
+      { name: 'LLM Integration' },
+      { name: 'Swagger / OpenAPI', icon: '/Services/swagger.svg' },
+      { name: 'Figma', icon: '/Services/figma.png' },
     ],
   },
 ];
+
+/** "Distributed Systems" -> "DS", "Redis" -> "RE", "C++" -> "C+". */
+const initials = (name: string) => {
+  const words = name.replace(/[()]/g, '').split(/[\s/&-]+/).filter(Boolean);
+  const letters = words.length > 1 ? words[0][0] + words[1][0] : name.slice(0, 2);
+  return letters.toUpperCase();
+};
 
 const TechStack = () => {
   const [activeFilter, setActiveFilter] = useState<string>('all');
@@ -96,13 +134,14 @@ const TechStack = () => {
     { t: 'stack', serif: true },
   ];
   const descriptionText =
-    'A selection of technologies I use to design, build, and deploy full-stack web applications.';
+    'A selection of technologies I use to design, build, and deploy applications.';
 
   const filterOptions = [
     { id: 'all', label: 'All Categories' },
     { id: 'frontend', label: 'Frontend' },
     { id: 'backend', label: 'Backend & Real-Time' },
     { id: 'database', label: 'Database & ORM' },
+    { id: 'realtime', label: 'Real-Time & Protocols' },
     { id: 'devops', label: 'DevOps & Cloud' },
     { id: 'tools', label: 'AI, Testing & Tools' },
   ];
@@ -240,18 +279,27 @@ const TechStack = () => {
 
               <div className="md:w-2/3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {stack.technologies.map((tech, i) => (
-                  <div key={i} className="tech-item">
-                    <div className={`chip-parchment flex items-center gap-3 p-3 cursor-pointer ${i % 2 === 0 ? 'aura-gold' : 'aura-elixir'}`}>
+                  <div key={i} className="tech-item h-full">
+                    <div className={`chip-parchment flex items-center gap-3 p-3 h-full min-w-0 cursor-pointer ${i % 2 === 0 ? 'aura-gold' : 'aura-elixir'}`}>
                       <div className="w-10 h-10 flex items-center justify-center relative flex-shrink-0">
-                        <Image
-                          src={tech.icon}
-                          alt={tech.name}
-                          width={40}
-                          height={40}
-                          className="w-full h-full object-contain"
-                        />
+                        {tech.icon ? (
+                          <Image
+                            src={tech.icon}
+                            alt={tech.name}
+                            width={40}
+                            height={40}
+                            className="w-full h-full object-contain"
+                          />
+                        ) : (
+                          <span
+                            aria-hidden="true"
+                            className="w-full h-full rounded-lg bg-charcoal/10 border border-charcoal/20 flex items-center justify-center font-mono text-xs font-bold text-charcoal"
+                          >
+                            {initials(tech.name)}
+                          </span>
+                        )}
                       </div>
-                      <p className="text-xs sm:text-sm font-mono font-bold text-charcoal break-words">
+                      <p lang="en" className="min-w-0 text-xs sm:text-sm font-mono font-bold text-charcoal leading-tight hyphens-auto [overflow-wrap:anywhere]">
                         {tech.name}
                       </p>
                     </div>

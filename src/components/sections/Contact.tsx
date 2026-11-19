@@ -75,7 +75,7 @@ const Contact = () => {
             opacity: 1,
             duration: 0.9,
             ease: EASE.outCubic,
-            scrollTrigger: { trigger: card, start: 'top 90%', once: true },
+            scrollTrigger: { trigger: card, start: 'top 90%', toggleActions: 'play none none none' },
           }
         );
       }
@@ -88,7 +88,7 @@ const Contact = () => {
             opacity: 1,
             duration: 0.8,
             ease: EASE.outCubic,
-            scrollTrigger: { trigger: cta, start: 'top 94%', once: true },
+            scrollTrigger: { trigger: cta, start: 'top 94%', toggleActions: 'play none none none' },
           }
         );
       }
@@ -180,7 +180,7 @@ const Contact = () => {
           />
           <div className="max-w-2xl mb-12">
             <ScrollWordReveal
-              text="Have a project in mind or just want to say hello? Feel free to reach out."
+              text="Looking to connect? I'd be happy to hear from you"
               offset={['start 0.95', 'end 0.7']}
               className="text-base sm:text-lg text-gray-soft font-sans leading-relaxed"
             />

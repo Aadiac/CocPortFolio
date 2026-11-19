@@ -1,9 +1,9 @@
 /**
  * @license
- * Copyright (c) 2026 Your Name. All rights reserved.
+ * Copyright (c) 2026 Aadith P S. All rights reserved.
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  * Project: Portfolio
- * Author: Your Name (yourhandle)
+ * Author: Aadith P S
  * Website: https://your-domain.com
  */
 

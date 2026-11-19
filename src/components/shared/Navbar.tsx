@@ -6,9 +6,10 @@ import { useTransitionState } from 'next-transition-router';
 import { useLenis } from '@/components/providers/SmoothScrollProvider';
 import AnimatedLink from '@/components/ui/AnimateLink';
 import { useHandleLinkClick } from '@/lib/navigation';
-import { site, socials } from '@/lib/site';
+import { site, socials, isExternalLink } from '@/lib/site';
 import Lenis from 'lenis';
 import Magnetic from '@/components/ui/Magnetic';
+import Image from 'next/image';
 
 interface MagneticHamburgerButtonProps {
   isOpen: boolean;
@@ -18,35 +19,6 @@ interface MagneticHamburgerButtonProps {
 const MagneticHamburgerButton: React.FC<MagneticHamburgerButtonProps> = ({ isOpen, onClick }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const rippleRef = useRef<HTMLSpanElement>(null);
-
-  const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (typeof window !== 'undefined' && (window.matchMedia('(pointer: coarse)').matches || !window.matchMedia('(hover: hover)').matches)) return;
-    const button = buttonRef.current;
-    const ripple = rippleRef.current;
-    if (!button || !ripple) return;
-
-    const rect = button.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const maxDistance = Math.max(
-      Math.hypot(x, y),
-      Math.hypot(rect.width - x, y),
-      Math.hypot(x, rect.height - y),
-      Math.hypot(rect.width - x, rect.height - y),
-    );
-    const finalScale = (maxDistance * 2) / 100;
-
-    gsap.set(ripple, { left: x, top: y, scale: 0, opacity: 1 });
-    gsap.to(ripple, { scale: finalScale, opacity: 1, duration: 0.6, ease: 'power2.out', overwrite: 'auto' });
-  };
-
-  const handleButtonMouseLeave = () => {
-    const button = buttonRef.current;
-    const ripple = rippleRef.current;
-    if (!button || !ripple) return;
-    gsap.to(ripple, { scale: 0, opacity: 0, duration: 0.5, ease: 'power2.out', overwrite: 'auto' });
-  };
 
   useEffect(() => {
     const el = buttonRef.current;
@@ -79,34 +51,25 @@ const MagneticHamburgerButton: React.FC<MagneticHamburgerButtonProps> = ({ isOpe
       <button
         ref={buttonRef}
         onClick={onClick}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleButtonMouseLeave}
-        className="relative w-12 h-12 md:w-15 md:h-15 rounded-full overflow-hidden bg-wood border-2 border-wood-dark outline-none flex items-center justify-center cursor-pointer shadow-[0_4px_0_#4A2C14,0_10px_18px_rgba(20,12,4,0.25)] group"
+        className="relative w-12 h-12 md:w-15 md:h-15 rounded-full outline-none flex items-center justify-center cursor-pointer focus-visible:ring-2 focus-visible:ring-accent group"
         style={{ transformOrigin: 'center' }}
         aria-label="Toggle menu"
         aria-expanded={isOpen}
         aria-controls="fullscreen-menu"
       >
-        <span
-          ref={rippleRef}
-          className="absolute pointer-events-none rounded-full w-[100px] h-[100px] -translate-x-1/2 -translate-y-1/2 bg-accent opacity-0"
-          style={{ transformOrigin: 'center' }}
+        {/* Nut turns a sixth on hover and half a turn while the menu is open. */}
+        <Image
+          src="/option_icon-nut.webp"
+          width={64}
+          height={64}
+          priority
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+          className={`w-full h-full pointer-events-none select-none drop-shadow-[0_4px_6px_rgba(20,12,4,0.45)] transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${
+            isOpen ? 'rotate-180' : 'rotate-0 group-hover:rotate-60'
+          }`}
         />
-
-        <div className="relative z-10 w-5 h-3 flex items-center justify-center pointer-events-none">
-          <span
-            className={`absolute w-full h-[2px] rounded-full bg-parchment transition-all duration-300 ease-[cubic-bezier(0.76,0,0.24,1)] ${
-              isOpen ? 'top-1/2 -translate-y-1/2 rotate-45' : 'top-0 rotate-0'
-            }`}
-            style={{ transformOrigin: 'center' }}
-          />
-          <span
-            className={`absolute w-full h-[2px] rounded-full bg-parchment transition-all duration-300 ease-[cubic-bezier(0.76,0,0.24,1)] ${
-              isOpen ? 'bottom-1/2 translate-y-1/2 -rotate-45' : 'bottom-0 rotate-0'
-            }`}
-            style={{ transformOrigin: 'center' }}
-          />
-        </div>
       </button>
     </div>
   );
@@ -390,10 +353,10 @@ const FullscreenMenu: React.FC<FullscreenMenuProps> = ({ isOpen, onClose, handle
                     <span className="text-gray-mid font-mono text-xs md:text-sm transition-colors duration-300 group-hover:text-accent">
                       {String(i + 1).padStart(2, '0')}
                     </span>
-                    <span className="font-display text-[clamp(2rem,3.6vw,3.2rem)] font-black uppercase leading-none tracking-tight text-cream group-hover:text-accent transition-colors duration-300 flex">
+                    <span className="font-display text-[2rem] sm:text-[2.4rem] md:text-[2.6rem] lg:text-[3rem] xl:text-[3.4rem] font-black uppercase leading-none tracking-tight text-cream group-hover:text-accent transition-colors duration-300 flex">
                       {link.name}
                     </span>
-                    <span className="text-accent text-2xl md:text-3xl lg:text-4xl opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0">
+                    <span className="text-accent text-xl md:text-2xl lg:text-3xl opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0">
                       →
                     </span>
                   </button>
@@ -420,12 +383,11 @@ const FullscreenMenu: React.FC<FullscreenMenuProps> = ({ isOpen, onClose, handle
             </div>
 
             <div className="flex gap-4 md:gap-6 justify-start flex-wrap">
-              {[socials.github, socials.source, socials.linkedin].map((s) => (
+              {[socials.github, socials.linkedin, socials.email].map((s) => (
                 <Magnetic key={s.label} strength={0.3}>
                   <a
                     href={s.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    {...(isExternalLink(s.href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                     className="group relative inline-block text-gray-mid hover:text-cream text-xs font-mono uppercase tracking-widest transition-colors duration-300 py-1"
                   >
                     <span>{s.label}</span>

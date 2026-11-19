@@ -16,19 +16,45 @@ declare global {
 
 let _isCurtainCovering = false;
 
+/** Viewport offset from the top of #projects, saved when a project was opened. */
+let _pendingAnchor: number | null = null;
+
+/** Take the saved #projects anchor for this return trip (one use only). */
+function takeProjectsAnchor() {
+  const raw = safeSessionStorage.getItem('projects-anchor');
+  safeSessionStorage.removeItem('projects-anchor');
+  const v = raw === null ? NaN : parseFloat(raw);
+  _pendingAnchor = Number.isFinite(v) ? v : null;
+}
+
+function clearProjectsAnchor() {
+  safeSessionStorage.removeItem('projects-anchor');
+  _pendingAnchor = null;
+}
+
 function restoreScroll(target: number, lenisInst: React.RefObject<Lenis | null> | null) {
   const lenisObj = lenisInst?.current || (typeof window !== 'undefined' ? window.__lenis : null);
-  document.documentElement.scrollTop = target;
-  document.body.scrollTop = target;
-  if (lenisObj) {
-    lenisObj.scrollTo(target, { immediate: true });
-    lenisObj.start();
-  }
+  const jump = (y: number) => {
+    document.documentElement.scrollTop = y;
+    document.body.scrollTop = y;
+    if (lenisObj) lenisObj.scrollTo(y, { immediate: true, force: true });
+  };
+  jump(target);
+  if (lenisObj) lenisObj.start();
   requestAnimationFrame(() => {
-    document.documentElement.scrollTop = target;
-    document.body.scrollTop = target;
-    if (lenisObj) lenisObj.scrollTo(target, { immediate: true });
+    jump(target);
     ScrollTrigger.refresh();
+    // refresh() rebuilds pinned sections above #projects, which changes the
+    // page height. The raw pixel target can then point at an earlier section,
+    // so re-aim at the same spot relative to #projects.
+    const anchor = _pendingAnchor;
+    _pendingAnchor = null;
+    const projectsEl = document.getElementById('projects');
+    if (anchor !== null && projectsEl) {
+      const y = Math.max(0, projectsEl.getBoundingClientRect().top + window.scrollY + anchor);
+      jump(y);
+      ScrollTrigger.update();
+    }
   });
 }
 
@@ -72,6 +98,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
             if (_isCurtainCovering) {
               const savedScroll = safeSessionStorage.getItem('projects-scroll');
               const target = savedScroll ? parseInt(savedScroll, 10) : 0;
+              takeProjectsAnchor();
               playCurtainOut(target);
             }
           }, 1500);
@@ -126,6 +153,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       if ((path === '/' || path === '') && _isCurtainCovering) {
         const savedScroll = safeSessionStorage.getItem('projects-scroll');
         const target = savedScroll ? parseInt(savedScroll, 10) : 0;
+        takeProjectsAnchor();
         playCurtainOut(target);
         return;
       }
@@ -133,6 +161,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       if (path === '/' || path === '') {
         const savedScroll = safeSessionStorage.getItem('projects-scroll');
         if (savedScroll) {
+          takeProjectsAnchor();
           restoreScroll(parseInt(savedScroll, 10), lenisRef.current);
         }
       }
@@ -229,8 +258,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           if (!isNavigatingToProject && savedScroll) {
             scrollTargetRef.current = parseInt(savedScroll, 10);
             safeSessionStorage.removeItem('projects-scroll');
+            takeProjectsAnchor();
           } else {
             scrollTargetRef.current = 0;
+            // Keep the anchor when heading into a project; it is needed on the way back.
+            if (!isNavigatingToProject) clearProjectsAnchor();
           }
           safeSessionStorage.removeItem('navigating-to-project');
           document.documentElement.scrollTop = scrollTargetRef.current;

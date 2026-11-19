@@ -19,6 +19,7 @@
     "test:e2e": "node tests/e2e/runner.mjs"
   },
   "dependencies": {
+    "@google/genai": "^3.1.0",
     "@gsap/react": "^2.1.2",
     "@next/third-parties": "^16.2.10",
     "@vercel/analytics": "^2.0.1",

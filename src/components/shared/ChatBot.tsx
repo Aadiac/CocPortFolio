@@ -302,8 +302,8 @@ const ChatBot = () => {
         {greetingVisible && !isOpen && (
           <div className="ba-greeting" role="status">
             <button type="button" className="ba-greeting-body" onClick={open} onPointerEnter={prefetchPanel}>
-              <span className="ba-greeting-title">Hey Chief!</span>
-              <span className="ba-greeting-text">{WELCOME_TEXT.replace(/^Hey Chief! /, '')}</span>
+              <span className="ba-greeting-title">Hey!</span>
+              <span className="ba-greeting-text">{WELCOME_TEXT.replace(/^Hey! /, '')}</span>
               <span className="ba-greeting-cta">Tap to explore →</span>
             </button>
             <button type="button" className="ba-greeting-close" onClick={dismissGreeting} aria-label="Dismiss greeting">

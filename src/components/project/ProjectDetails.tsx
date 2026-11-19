@@ -9,9 +9,25 @@ import AnimatedButton from '@/components/ui/AnimatedButton';
 import { gsap, SplitText, useGSAP } from '@/lib/gsap';
 import { EASE } from '@/lib/motion';
 import { FaArrowUp, FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
-import { Project } from '@/lib/projects';
+import { DetailPoint, Project } from '@/lib/projects';
 import { getAdjacentProjects } from '@/lib/projects';
 import { site } from '@/lib/site';
+
+function DetailPoints({ points }: { points?: DetailPoint[] }) {
+  if (!points || points.length === 0) return null;
+  return (
+    <ul className="mt-5 sm:mt-6 space-y-3 text-sm sm:text-base md:text-lg text-light/80 font-sans leading-relaxed">
+      {points.map((point) => (
+        <li key={point.label} className="flex gap-3">
+          <span aria-hidden="true" className="mt-[0.7em] h-1.5 w-1.5 flex-shrink-0 rounded-full bg-accent" />
+          <span>
+            <strong className="font-semibold text-light">{point.label}:</strong> {point.text}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export default function ProjectDetails({ project }: { project: Project }) {
   const rootRef = useRef<HTMLElement>(null);
@@ -35,6 +51,8 @@ export default function ProjectDetails({ project }: { project: Project }) {
           ease: EASE.outQuart,
           stagger: 0.08,
           delay: 0.15,
+          // The line masks clip glyphs that rise above the line box, so drop them once the reveal ends.
+          onComplete: () => split.revert(),
         }
       );
 
@@ -90,7 +108,7 @@ export default function ProjectDetails({ project }: { project: Project }) {
           <h1
             ref={titleRef}
             aria-label={project.title}
-            className="font-display font-black uppercase tracking-tight leading-[0.98] sm:leading-[1.02] text-[clamp(2rem,6vw,5.5rem)] mb-5 sm:mb-8"
+            className="font-display font-black uppercase tracking-tight leading-[1.15] sm:leading-[1.2] pt-2 text-[clamp(2rem,6vw,5.5rem)] mb-5 sm:mb-8"
           >
             <span aria-hidden="true" className="pd-title-text block">
               {project.title}
@@ -187,6 +205,7 @@ export default function ProjectDetails({ project }: { project: Project }) {
               offset={['start 0.98', 'end 0.88']}
               className="text-sm sm:text-base md:text-lg text-light/80 font-sans leading-relaxed"
             />
+            <DetailPoints points={project.architecturePoints} />
           </div>
         </div>
 
@@ -200,6 +219,7 @@ export default function ProjectDetails({ project }: { project: Project }) {
               offset={['start 0.98', 'end 0.88']}
               className="text-sm sm:text-base md:text-lg text-light/80 font-sans leading-relaxed"
             />
+            <DetailPoints points={project.implementationPoints} />
           </div>
         </div>
 
@@ -241,23 +261,38 @@ export default function ProjectDetails({ project }: { project: Project }) {
                     actualIdx % 3 === 1 ? 'md:ml-auto' : ''
                   }`}
                 >
-                  <div
-                    className={`overflow-hidden rounded-xl bg-surface-card border border-surface-border relative aspect-[16/10] sm:aspect-[16/9] md:aspect-[21/9] ${
-                      wide ? 'max-h-[500px]' : 'max-h-[420px]'
-                    } w-full`}
-                  >
-                    <div className="pd-figure-parallax absolute inset-0 overflow-hidden">
-                      <div className="pd-figure-inner absolute inset-x-0 -top-[8%] h-[116%]" style={{ willChange: 'transform' }}>
-                        <Image
-                          src={img}
-                          alt={`${project.title} screenshot ${actualIdx + 1}`}
-                          fill
-                          sizes="(max-width: 768px) 100vw, 1100px"
-                          className="object-cover object-top"
-                        />
+                  {/\.(mp4|webm)$/i.test(img) ? (
+                    <div className="overflow-hidden rounded-xl bg-surface-card border border-surface-border w-full">
+                      <video
+                        src={img}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                        aria-label={`${project.title} demo ${actualIdx + 1}`}
+                        className="block w-full h-auto"
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      className={`overflow-hidden rounded-xl bg-surface-card border border-surface-border relative aspect-[16/10] sm:aspect-[16/9] md:aspect-[21/9] ${
+                        wide ? 'max-h-[500px]' : 'max-h-[420px]'
+                      } w-full`}
+                    >
+                      <div className="pd-figure-parallax absolute inset-0 overflow-hidden">
+                        <div className="pd-figure-inner absolute inset-x-0 -top-[8%] h-[116%]" style={{ willChange: 'transform' }}>
+                          <Image
+                            src={img}
+                            alt={`${project.title} screenshot ${actualIdx + 1}`}
+                            fill
+                            sizes="(max-width: 768px) 100vw, 1100px"
+                            className="object-cover object-top"
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                   <figcaption className="mt-2.5 flex items-center justify-between font-mono text-[10px] sm:text-[11px] uppercase tracking-widest text-muted">
                     <span>{project.title}</span>
                     <span>

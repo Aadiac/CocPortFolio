@@ -104,7 +104,7 @@ export default function JourneyTimeline() {
         const isLeft = i % 2 === 0;
 
         const tl = gsap.timeline({
-          scrollTrigger: { trigger: row, start: 'top 88%', once: true },
+          scrollTrigger: { trigger: row, start: 'top 88%', toggleActions: 'play none none none' },
         });
 
         if (card) {
@@ -527,7 +527,7 @@ export default function JourneyTimeline() {
 
             <div className="max-w-sm md:pb-2">
               <p className="font-sans text-sm leading-relaxed text-gray-soft md:text-base">
-                Six stops, one hammer. Scroll to swing through the roles, awards
+                Three stops, one hammer. Scroll to swing through the roles, awards
                 and certifications that built the path.
               </p>
               <span className="mt-4 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.24em] text-gold">
@@ -586,7 +586,7 @@ export default function JourneyTimeline() {
                   }}
                   data-side={isLeft ? 'left' : 'right'}
                   data-current={milestone.current ? 'true' : undefined}
-                  className={`${s.row} relative grid grid-cols-[44px_minmax(0,1fr)] gap-x-5 md:grid-cols-[minmax(0,1fr)_160px_minmax(0,1fr)] md:gap-x-0`}
+                  className={`${s.row} relative grid grid-cols-[44px_minmax(0,1fr)] gap-x-5 md:grid-cols-[minmax(0,1fr)_120px_minmax(0,1fr)] md:gap-x-0`}
                 >
                   {/* Target node on the rail */}
                   <div className={`${s.node} col-start-1 row-start-1 md:col-start-2`}>

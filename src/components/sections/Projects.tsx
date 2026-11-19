@@ -226,6 +226,15 @@ const useHoverPreview = (containerRef?: React.RefObject<HTMLDivElement | null>) 
   return { setFloatingRef, setInnerRef, setImageContainerRef, show, hide, forceHide, isHovering, mouse };
 };
 
+/**
+ * Remember where the viewport sits relative to the #projects section, so the
+ * return trip lands on the same spot even if sections above change height.
+ */
+function saveProjectsAnchor() {
+  const el = document.getElementById('projects');
+  if (el) sessionStorage.setItem('projects-anchor', String(-el.getBoundingClientRect().top));
+}
+
 interface MobileSnapProjectsProps {
   projects: Project[];
   router: ReturnType<typeof useRouter>;
@@ -259,7 +268,7 @@ function MobileSnapProjects({ projects, router }: MobileSnapProjectsProps) {
           if (cta) gsap.set(cta, { opacity: 0, y: 14 });
 
           const tl = gsap.timeline({
-            scrollTrigger: { trigger: card, start: 'top 90%', once: true },
+            scrollTrigger: { trigger: card, start: 'top 90%', toggleActions: 'play none none none' },
           });
 
           tl.to(card, { opacity: 1, y: 0, duration: 0.65, ease: 'power3.out' }, 0);
@@ -311,6 +320,7 @@ function MobileSnapProjects({ projects, router }: MobileSnapProjectsProps) {
                 ? Math.round((window as any).__lenis.scroll)
                 : Math.round(window.scrollY);
               sessionStorage.setItem('projects-scroll', scrollY.toString());
+              saveProjectsAnchor();
               sessionStorage.setItem('previous-project-url', window.location.pathname);
             }}
             ref={(el) => { cardRefs.current[index] = el; }}
@@ -319,27 +329,32 @@ function MobileSnapProjects({ projects, router }: MobileSnapProjectsProps) {
             <span className="achievement-ribbon absolute -top-3.5 left-5 z-10" aria-hidden="true">
               ★ Achievement unlocked
             </span>
-            <div className="p-3 pb-0">
-              <div
-                className="mc-img-wrap relative overflow-hidden rounded-2xl"
-                style={{ aspectRatio: '16 / 10', clipPath: 'inset(100% 0 0 0 round 14px)' }}
-              >
-                <Image
-                  src={project.hoverImage || project.images[0]}
-                  alt={project.title}
-                  fill
-                  sizes="(max-width: 767px) calc(100vw - 32px)"
-                  priority={index < 2}
-                  className="mc-img object-cover object-top"
-                />
+            {(project.hoverImage || project.images[0]) && (
+              <div className="p-3 pb-0">
                 <div
-                  className="absolute inset-0 pointer-events-none"
-                  style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 50%, rgba(0,0,0,0.12) 100%)' }}
-                />
+                  className="mc-img-wrap relative overflow-hidden rounded-2xl"
+                  style={{ aspectRatio: '16 / 10', clipPath: 'inset(100% 0 0 0 round 14px)' }}
+                >
+                  <Image
+                    src={project.hoverImage || project.images[0]}
+                    alt={project.title}
+                    fill
+                    sizes="(max-width: 767px) calc(100vw - 32px)"
+                    priority={index < 2}
+                    className="mc-img object-cover object-top"
+                  />
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 50%, rgba(0,0,0,0.12) 100%)' }}
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
-            <div className="px-5 pt-4 pb-5 text-left">
+            {/* With no image, the ribbon sits over this block, so leave room for it. */}
+            <div
+              className={`px-5 pb-5 text-left ${project.hoverImage || project.images[0] ? 'pt-4' : 'pt-9'}`}
+            >
               <div className="flex items-center justify-between mb-4">
                 <span
                   className="mc-num font-mono font-black leading-none"
@@ -423,7 +438,7 @@ export default function ProjectsPage() {
         if (alreadyVisible) {
           gsap.fromTo(row, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, delay: index * 0.08, ease: 'power3.out' });
         } else {
-          gsap.fromTo(row, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out', scrollTrigger: { trigger: row, start: 'top 92%', once: true } });
+          gsap.fromTo(row, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out', scrollTrigger: { trigger: row, start: 'top 92%', toggleActions: 'play none none none' } });
         }
       });
     },
@@ -439,8 +454,12 @@ export default function ProjectsPage() {
         return;
       if (!containerRef.current) return;
 
+      // Projects without a hoverImage get no floating screenshot preview.
+      const hasPreview = Boolean(projects[index]?.hoverImage);
+
       if (activeIndexRef.current === index) {
-        show(clientX, clientY);
+        if (hasPreview) show(clientX, clientY);
+        else hide();
         return;
       }
       activeIndexRef.current = index;
@@ -469,9 +488,10 @@ export default function ProjectsPage() {
         });
       }
 
-      show(clientX, clientY);
+      if (hasPreview) show(clientX, clientY);
+      else hide();
     },
-    [projects, router, show],
+    [projects, router, show, hide],
   );
 
   const deactivateAll = useCallback(
@@ -572,6 +592,7 @@ export default function ProjectsPage() {
       ? Math.round((window as any).__lenis.scroll)
       : Math.round(window.scrollY);
     sessionStorage.setItem('projects-scroll', scrollY.toString());
+    saveProjectsAnchor();
     sessionStorage.setItem('previous-project-url', window.location.pathname);
   };
 
@@ -681,21 +702,23 @@ export default function ProjectsPage() {
                 style={{ willChange: 'transform', transform: 'translateY(0%)' }}
               >
                 {projects.map((project, idx) => {
-                  const imgUrl = project.hoverImage || project.images[0];
+                  const imgUrl = project.hoverImage;
                   return (
                     <div
                       key={project.id}
                       className="w-full h-full absolute inset-0 overflow-hidden"
                       style={{ top: `${idx * 100}%` }}
                     >
-                      <Image
-                        src={imgUrl}
-                        alt={project.title}
-                        fill
-                        sizes="480px"
-                        priority={idx < 2}
-                        className="object-cover object-top"
-                      />
+                      {imgUrl && (
+                        <Image
+                          src={imgUrl}
+                          alt={project.title}
+                          fill
+                          sizes="480px"
+                          priority={idx < 2}
+                          className="object-cover object-top"
+                        />
+                      )}
                     </div>
                   );
                 })}

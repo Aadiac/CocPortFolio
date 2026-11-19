@@ -1,8 +1,7 @@
 /**
  * Shared milestone data for the portfolio.
  *
- * Used by the scroll-driven Journey timeline and the Builder chatbot, so the
- * rendered section and the assistant always stay in sync. Replace the
+ * Used by the scroll-driven Journey timeline. Replace the
  * placeholders below with your real roles, certifications, awards and
  * education.
  */
@@ -20,58 +19,31 @@ export interface Milestone {
 
 export const MILESTONES: Milestone[] = [
   {
-    year: '2026 — Present',
-    type: 'Industry',
-    title: 'Your Current Role',
-    organization: 'Company name',
+    year: 'Jul 2026 — Present',
+    type: 'Professional Experience',
+    title: 'Full Stack Ai Developer',
+    organization: 'Y’s Technologies',
     description:
-      'Leading front-end architecture for a product used by thousands of people every day.',
-    tags: ['React', 'Next.js', 'Design systems'],
+      'Developed cross-platform mobile apps and React-based web applications, building scalable backend services using Go and Node.js. Worked on AI-powered solutions involving LLMs, RAG, Claude, and AI development tools.',
+    tags: ['Go', 'Node.js', 'React Native', 'WebSockets' ,'LLMs' , 'RAG ','Claude' , 'Vector Databases' ,'Prompt Engineering' , 'AI Integration'],
     current: true,
   },
   {
-    year: '2025',
-    type: 'Certification',
-    title: 'Your Certification',
-    organization: 'Issuing organization',
+    year: 'Dec 2023 — Jun 2026',
+    type: 'Professional Experience',
+    title: 'Backend Developer',
+    organization: '6D Technologies',
     description:
-      'Cloud architecture, cost-aware scaling and resilient deployments.',
-    tags: ['AWS', 'Cloud', 'CI/CD'],
+      'Developed low-latency Go and C++ microservices for 5G systems, implementing core features of the 5G Policy Control Function (PCF) deployed in Singtels production network. Worked extensively with Linux and Docker for development, deployment, and system-level operations.',
+    tags: ['Go', 'C++', 'Linux', 'Docker', '5G Core', 'Microservices', 'PostgreSQL', 'GitLab ', 'Distributed Systems', 'Concurrency'],
   },
   {
-    year: '2024',
-    type: 'Award',
-    title: 'Your Award or Recognition',
-    organization: 'Awarding body',
-    description:
-      'Recognised for craft, performance and attention to detail.',
-    tags: ['Craft', 'Performance'],
-  },
-  {
-    year: '2023',
-    type: 'Industry',
-    title: 'Full-Stack Developer',
-    organization: 'Previous company',
-    description:
-      'Shipped end-to-end features across React, Node and Postgres.',
-    tags: ['TypeScript', 'Node.js', 'Postgres'],
-  },
-  {
-    year: '2022 — 2026',
+    year: '2019 — 2023',
     type: 'Education',
-    title: 'Your Degree',
-    organization: 'University name',
+    title: 'B.Tech — Computer Science & Engineering',
+    organization: 'APJ Abdul Kalam Technological University',
     description:
-      'Focused on distributed systems and human-computer interaction.',
-    tags: ['Systems', 'HCI'],
-  },
-  {
-    year: '2021',
-    type: 'Certification',
-    title: 'Front-End Developer',
-    organization: 'Coursera',
-    description:
-      'Foundations in accessible, responsive interface engineering.',
-    tags: ['Accessibility', 'CSS'],
+      'Undergraduate degree in computer science and engineering.',
+    tags: ['Computer Science'],
   },
 ];

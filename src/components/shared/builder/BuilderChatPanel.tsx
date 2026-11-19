@@ -1,19 +1,16 @@
 'use client';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { RotateCcw, Send, X } from 'lucide-react';
 import { BuilderPortrait } from '@/components/shared/builder/BuilderSprite';
 import BuilderMessage, { type ChatMessage } from '@/components/shared/builder/BuilderMessage';
 import {
-  getBotReply,
   getReplyForAction,
   menuReply,
   welcomeReply,
   RESUME_URL,
   type BotReply,
   type BotResult,
-  type ProjectSummary,
   type QuickActionId,
   type ReplyAction,
 } from '@/lib/chatbot';
@@ -29,10 +26,17 @@ interface BuilderChatPanelProps {
   onActivity: (activity: PanelActivity) => void;
 }
 
-// The replies are computed locally; this short pause only lets the "working" state read clearly.
+// Menu replies are computed locally; this short pause only lets the "working" state read clearly.
 const THINK_MS = 520;
 const RESUME_TIMEOUT_MS = 8000;
-const CLAIM_MS = 260;
+const ASK_TIMEOUT_MS = 35000;
+const MAX_HISTORY_TURNS = 6;
+
+const ASK_ERRORS: Record<number, string> = {
+  429: "You've asked a lot of questions! Give me a few minutes, then ask again.",
+  503: "I can't answer right now. You can still reach me through the contact form at the bottom of the page.",
+};
+const ASK_ERROR_DEFAULT = 'Something went wrong while answering. Please send your question again.';
 
 const createWelcome = (): ChatMessage[] => [{ id: 0, from: 'bot', text: welcomeReply().text, reply: welcomeReply() }];
 
@@ -45,7 +49,6 @@ const BuilderChatPanel = ({ phase, onClose, onActivity }: BuilderChatPanelProps)
   const [messages, setMessages] = useState<ChatMessage[]>(createWelcome);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
-  const [claimedProject, setClaimedProject] = useState<string | null>(null);
 
   const panelRef = useRef<HTMLElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -53,16 +56,16 @@ const BuilderChatPanel = ({ phase, onClose, onActivity }: BuilderChatPanelProps)
   const nextId = useRef(1);
   const busyRef = useRef(false);
   const replyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const resumeRequest = useRef<AbortController | null>(null);
+  const pendingRequest = useRef<AbortController | null>(null);
+  const history = useRef<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
   const reduced = useReducedMotion();
-  const router = useRouter();
   const navigate = useHandleLinkClick();
 
   const cancelPending = useCallback(() => {
     if (replyTimer.current) clearTimeout(replyTimer.current);
     replyTimer.current = null;
-    resumeRequest.current?.abort();
-    resumeRequest.current = null;
+    pendingRequest.current?.abort();
+    pendingRequest.current = null;
     busyRef.current = false;
     setBusy(false);
   }, []);
@@ -84,7 +87,7 @@ const BuilderChatPanel = ({ phase, onClose, onActivity }: BuilderChatPanelProps)
 
   const fetchResume = useCallback(async () => {
     const controller = new AbortController();
-    resumeRequest.current = controller;
+    pendingRequest.current = controller;
     const timeout = setTimeout(() => controller.abort(), RESUME_TIMEOUT_MS);
     const minimumWait = new Promise((resolve) => setTimeout(resolve, reduced ? 0 : THINK_MS));
 
@@ -92,7 +95,7 @@ const BuilderChatPanel = ({ phase, onClose, onActivity }: BuilderChatPanelProps)
       const response = await fetch(RESUME_URL, { method: 'HEAD', cache: 'no-store', signal: controller.signal });
       await minimumWait;
       // Cancelled by a restart while waiting.
-      if (resumeRequest.current !== controller) return;
+      if (pendingRequest.current !== controller) return;
 
       if (response.ok) {
         const link = document.createElement('a');
@@ -123,7 +126,7 @@ const BuilderChatPanel = ({ phase, onClose, onActivity }: BuilderChatPanelProps)
       }
     } catch {
       // Aborted because the panel was restarted or unmounted: stay silent.
-      if (resumeRequest.current !== controller) return;
+      if (pendingRequest.current !== controller) return;
       pushBot(
         {
           text: "I couldn't reach the resume vault just now. Check your connection and try again.",
@@ -136,9 +139,46 @@ const BuilderChatPanel = ({ phase, onClose, onActivity }: BuilderChatPanelProps)
       );
     } finally {
       clearTimeout(timeout);
-      if (resumeRequest.current === controller) resumeRequest.current = null;
+      if (pendingRequest.current === controller) pendingRequest.current = null;
     }
   }, [pushBot, reduced]);
+
+  const askBuilder = useCallback(
+    async (question: string) => {
+      const controller = new AbortController();
+      pendingRequest.current = controller;
+      const timeout = setTimeout(() => controller.abort(), ASK_TIMEOUT_MS);
+
+      let status = 0;
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question, history: history.current }),
+          signal: controller.signal,
+        });
+        status = response.status;
+        const data = (await response.json()) as { reply?: BotReply };
+        if (pendingRequest.current !== controller) return;
+        if (!response.ok || !data.reply) throw new Error(`Unexpected status ${status}`);
+
+        history.current = [
+          ...history.current,
+          { role: 'user' as const, content: question },
+          { role: 'assistant' as const, content: data.reply.text },
+        ].slice(-MAX_HISTORY_TURNS);
+        pushBot(data.reply);
+      } catch {
+        // Aborted because the panel was restarted or unmounted: stay silent.
+        if (pendingRequest.current !== controller) return;
+        pushBot({ text: ASK_ERRORS[status] ?? ASK_ERROR_DEFAULT }, true);
+      } finally {
+        clearTimeout(timeout);
+        if (pendingRequest.current === controller) pendingRequest.current = null;
+      }
+    },
+    [pushBot],
+  );
 
   const process = useCallback(
     (userText: string, resolve: () => BotResult) => {
@@ -153,6 +193,10 @@ const BuilderChatPanel = ({ phase, onClose, onActivity }: BuilderChatPanelProps)
         void fetchResume();
         return;
       }
+      if (result.type === 'ask') {
+        void askBuilder(result.question);
+        return;
+      }
       replyTimer.current = setTimeout(
         () => {
           replyTimer.current = null;
@@ -161,7 +205,7 @@ const BuilderChatPanel = ({ phase, onClose, onActivity }: BuilderChatPanelProps)
         reduced ? 0 : THINK_MS,
       );
     },
-    [fetchResume, onActivity, pushBot, reduced],
+    [askBuilder, fetchResume, onActivity, pushBot, reduced],
   );
 
   const handleQuick = useCallback(
@@ -188,6 +232,9 @@ const BuilderChatPanel = ({ phase, onClose, onActivity }: BuilderChatPanelProps)
         case 'menu':
           process('Main menu', () => ({ type: 'reply', reply: menuReply() }));
           return;
+        case 'ask':
+          process(action.label, () => ({ type: 'ask', question: action.question ?? action.label }));
+          return;
         case 'quick':
         case 'retry':
           handleQuick(action.id, action.label);
@@ -199,36 +246,17 @@ const BuilderChatPanel = ({ phase, onClose, onActivity }: BuilderChatPanelProps)
     [goTo, handleQuick, process],
   );
 
-  const handleOpenProject = useCallback(
-    (project: ProjectSummary, event: React.MouseEvent<HTMLAnchorElement>) => {
-      if (isModifiedClick(event)) return;
-      event.preventDefault();
-      if (claimedProject) return;
-      setClaimedProject(project.slug);
-      onActivity('celebrating');
-      router.prefetch(project.caseStudyHref);
-      setTimeout(
-        () => {
-          setClaimedProject(null);
-          router.push(project.caseStudyHref);
-          if (isNarrowViewport()) onClose();
-        },
-        reduced ? 0 : CLAIM_MS,
-      );
-    },
-    [claimedProject, onActivity, onClose, reduced, router],
-  );
-
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const text = input.trim();
     if (!text || busyRef.current) return;
     setInput('');
-    process(text, () => getBotReply(text));
+    process(text, () => ({ type: 'ask', question: text }));
   };
 
   const restart = () => {
     cancelPending();
+    history.current = [];
     nextId.current = 1;
     setMessages(createWelcome());
     setInput('');
@@ -291,7 +319,7 @@ const BuilderChatPanel = ({ phase, onClose, onActivity }: BuilderChatPanelProps)
         </span>
         <div className="ba-header-text">
           <h2 id="builder-chat-title" className="ba-title">
-            Builder&apos;s Workshop
+            Ask the Builder
           </h2>
           <p id="builder-chat-subtitle" className="ba-subtitle">
             Your guide to my developer village
@@ -317,10 +345,8 @@ const BuilderChatPanel = ({ phase, onClose, onActivity }: BuilderChatPanelProps)
             key={message.id}
             message={message}
             busy={busy}
-            claimedProject={claimedProject}
             onQuick={handleQuick}
             onAction={handleAction}
-            onOpenProject={handleOpenProject}
           />
         ))}
 
@@ -350,7 +376,7 @@ const BuilderChatPanel = ({ phase, onClose, onActivity }: BuilderChatPanelProps)
           type="text"
           value={input}
           onChange={(event) => setInput(event.target.value)}
-          placeholder="Ask about skills, projects…"
+          placeholder="Ask about my resume…"
           autoComplete="off"
           enterKeyHint="send"
           maxLength={300}
